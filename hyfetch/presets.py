@@ -679,6 +679,17 @@ PRESETS: dict[str, ColorProfile] = {
         '#636363',
     ]),
 
+    # Queer Subcultures
+    # sourced from https://commons.wikimedia.org/wiki/File:Bear_Brotherhood_flag.svg
+    'bear': ColorProfile([
+        '#623804',
+	'#D56300',
+	'#FEDD63',
+	'#FEE6B8',
+	'#FFFFFF',
+	'#555555',
+    ]),
+	    
     # Meme flags
     'beiyang': ColorProfile([
         '#DF1B12',
