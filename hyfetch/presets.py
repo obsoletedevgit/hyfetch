@@ -691,7 +691,7 @@ PRESETS: dict[str, ColorProfile] = {
     ]),
 	
     # colorpicked from https://commons.wikimedia.org/wiki/File:Leather,_Latex,_and_BDSM_pride_-_Light.svg
-    'leather1': ColorProfile([
+    'leather': ColorProfile([
 	'#000000',
 	'#252580',
 	'#000000',
@@ -699,15 +699,6 @@ PRESETS: dict[str, ColorProfile] = {
 	'#FFFFFF',
 	'#252580',
 	'#000000',
-	'#252580',
-	'#000000',
-    ]),
-
-    # same as above but simplified
-    'leather2': ColorProfile([
-	'#000000',
-	'#252580',
-	'#FFFFFF',
 	'#252580',
 	'#000000',
     ]),
