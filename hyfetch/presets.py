@@ -702,6 +702,23 @@ PRESETS: dict[str, ColorProfile] = {
 	'#252580',
 	'#000000',
     ]),
+
+    # colorpicked from https://commons.wikimedia.org/wiki/File:Official_Otter_Pride_Flag_by_Bearbackgear.jpg
+    'otter': ColorProfile([
+	'#263881',
+	'#5C9DC9',
+	'#FFFFFF',
+	'#3A291D',
+	'#5C9DC9',
+	'#263881',
+    ]),
+
+    # colorpicked from https://commons.wikimedia.org/wiki/File:Twink_Pride_Flag_(proposed).svg
+    'twink': ColorProfile([
+	'#FFB2FF',
+	'#FFFFFF',
+	'#FFFF81',
+    ]),
 	    
     # Meme flags
     'beiyang': ColorProfile([
