@@ -689,6 +689,17 @@ PRESETS: dict[str, ColorProfile] = {
 	'#FFFFFF',
 	'#555555',
     ]),
+
+    # colorpicked from https://commons.wikimedia.org/wiki/File:Butch_Flag.png
+    'butch': ColorProfile([
+	'#D72800',
+	'#F17623',
+	'#FF9C56',
+	'#FFFDF6',
+	'#FFCE89',
+	'#FEAF02',
+	'#A37000',
+    ]),
 	
     # colorpicked from https://commons.wikimedia.org/wiki/File:Leather,_Latex,_and_BDSM_pride_-_Light.svg
     'leather': ColorProfile([
@@ -748,5 +759,5 @@ PRESETS: dict[str, ColorProfile] = {
         '#1B86BC',
         '#243897',
         '#6F0A82',
-    ])
+    ]),
 }
