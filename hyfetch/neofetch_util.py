@@ -245,7 +245,8 @@ def run_neofetch_cmd(args: str, pipe: bool = False) -> str | None:
     Run neofetch command
     """
     if platform.system() != 'Windows':
-        full_cmd = ['/usr/bin/env', 'bash', get_command_path(), *shlex.split(args)]
+        bash = ['/usr/bin/env', 'bash'] if Path('/usr/bin/env').is_file() else [shutil.which('bash')]
+        full_cmd = [*bash, get_command_path(), *shlex.split(args)]
 
     else:
         cmd = get_command_path().replace("\\", "/").replace("C:/", "/c/")
@@ -343,12 +344,19 @@ def run_neofetch(asc: str, args: str = ''):
     with TemporaryDirectory() as tmp_dir:
         tmp_dir = Path(tmp_dir)
         path = tmp_dir / 'ascii.txt'
-        path.write_text(asc)
+        path.write_text(asc, 'utf-8')
 
         # Call neofetch with the temp file
         if args:
             args = ' ' + args
         run_neofetch_cmd(f'--ascii --source {path.absolute()} --ascii-colors' + args)
+
+
+def fastfetch_path() -> Path | None:
+    return (shutil.which('fastfetch')
+            or if_file(SRC / 'fastfetch/usr/bin/fastfetch')
+            or if_file(SRC / 'fastfetch/fastfetch')
+            or if_file(SRC / 'fastfetch/fastfetch.exe'))
 
 
 def run_fastfetch(asc: str, args: str = '', legacy: bool = False):
@@ -360,10 +368,7 @@ def run_fastfetch(asc: str, args: str = '', legacy: bool = False):
     :param legacy: Set true when using fastfetch < 1.8.0
     """
     # Find fastfetch binary
-    ff_path = (shutil.which('fastfetch') 
-               or if_file(SRC / 'fastfetch/usr/bin/fastfetch') 
-               or if_file(SRC / 'fastfetch/fastfetch')
-               or if_file(SRC / 'fastfetch/fastfetch.exe'))
+    ff_path = fastfetch_path()
     
     if not ff_path:
         printc("&cError: fastfetch binary is not found. Please install fastfetch first.")
@@ -373,7 +378,7 @@ def run_fastfetch(asc: str, args: str = '', legacy: bool = False):
     with TemporaryDirectory() as tmp_dir:
         tmp_dir = Path(tmp_dir)
         path = tmp_dir / 'ascii.txt'
-        path.write_text(asc)
+        path.write_text(asc, 'utf-8')
 
         # Call fastfetch with the temp file
         proc = subprocess.run([ff_path, '--raw' if legacy else '--file-raw', path.absolute(), *shlex.split(args)])
@@ -410,5 +415,6 @@ fore_back = {
     'ubuntu-mate': (2, 1),
     'ubuntu-studio': (2, 1),
     'ubuntu-sway': (2, 1),
+    'ultramarine': (2, 1),
 }
 
