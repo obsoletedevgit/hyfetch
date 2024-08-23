@@ -2078,6 +2078,7 @@ get_packages() {
     # Programming language package managers.
     if [[ -z "$package_minimal" ]]; then
         has pipx  && tot pipx list --short
+        has pip   && tot pip freeze
         has cargo && _cargopkgs="$(cargo install --list | grep -v '^ ')" && tot echo "$_cargopkgs"
 
         # Special case for npm: If has npm, we should list folders under node_modules instead of using npm list.
@@ -2150,9 +2151,17 @@ get_packages() {
             has bulge      && tot bulge list
             has pm         && tot-safe pm list packages
             has evox       && tot cat /var/evox/packages/DB
-            has squirrel   && tot ls /var/packages
+            has squirrel   && tot ls -w 1 /var/packages
             has anise      && tot anise s --installed
             has am         && pac "$(am -f --less)"
+            has bonsai     && tot bonsai list
+            has pkg_info   && tot pkg_info -i
+            has guix       && tot guix package --list-installed
+            has rad        && tot rad -cl
+            has radula     && tot radula -cl # 'Rad' was previously called 'Radula', some systems may still have the old name.
+            has urpmq      && tot urpmq --list-media active
+            has birb       && tot birb --list-installed
+            
 
             # Using the dnf package cache is much faster than rpm.
             if has dnf && type -p sqlite3 >/dev/null && [[ -f /var/cache/dnf/packages.db ]]; then
@@ -2283,9 +2292,18 @@ get_packages() {
             has snap && ps -e | grep -qFm 1 snapd >/dev/null && \
             pkgs_h=1 tot snap list && ((packages-=1))
 
-            # This is the only standard location for appimages.
-            # See: https://github.com/AppImage/AppImageKit/wiki
-            manager=appimage && has appimaged && dir ~/.local/bin/*.[Aa]pp[Ii]mage
+            # Get AppImageLauncher Application directory, 
+            # See: https://github.com/TheAssassin/AppImageLauncher/wiki/Configuration#settings-file
+            manager=appimage && has appimaged || [ -f $HOME/.config/appimagelauncher.cfg ] &&
+            if [ -f $HOME/.config/appimagelauncher.cfg ]; then
+                ALDIR=$(cat $HOME/.config/appimagelauncher.cfg | grep "destination" --color=never | sed 's/^.*= //')
+                [ $(ls -w 1 $ALDIR | grep -ic "AppImage") = "0" ] && unset ALDIR
+            fi &&
+            if [ -f $HOME/.local/bin/*.[Aa]pp[Ii]mage ]; then
+                AIDIR="$HOME/.local/bin"
+            fi &&
+            dir "$AIDIR/*.[Aa]pp[Ii]mage \
+                $ALDIR/*.[Aa]pp[Ii]mage" 
 
             # Has devbox & is initialized
             has devbox && [[ "$(devbox global list)" != *"not activated"* ]] && tot devbox global list
