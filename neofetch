@@ -2299,9 +2299,10 @@ get_packages() {
             manager=appimage && has appimaged || [ -f "$HOME"/.config/appimagelauncher.cfg ] &&
             if [ -f "$HOME"/.config/appimagelauncher.cfg ]; then
                 ALDIR=$(grep "destination" "$HOME/.config/appimagelauncher.cfg" --color=never | sed 's/^.*= //')
+                # shellcheck disable=SC2010
                 [ "$(ls -w 1 "$ALDIR" | grep -ic "AppImage")" = "0" ] && unset ALDIR
             fi &&
-            if [ -f "$HOME"/.local/bin/*.[Aa]pp[Ii]mage ]; then
+            if find "$HOME"/.local/bin/ -type f -name '*.[Aa]pp[Ii]mage' -print -quit | grep -q .; then
                 AIDIR="$HOME/.local/bin"
             fi &&
             dir "$AIDIR/*.[Aa]pp[Ii]mage \
