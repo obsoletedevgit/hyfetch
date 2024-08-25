@@ -2157,7 +2157,6 @@ get_packages() {
             # Bonsai refers to the now archived repo https://github.com/mitchweaver/bonsai
             has bonsai     && tot bonsai list
             has pkg_info   && tot pkg_info -i
-            has guix       && tot guix package --list-installed
             has rad        && tot rad -cl
             has radula     && tot radula -cl # 'Rad' was previously called 'Radula', some systems may still have the old name.
             has urpmq      && tot urpmq --list-media active
