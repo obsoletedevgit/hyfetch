@@ -2156,10 +2156,12 @@ get_packages() {
             has am         && pac "$(am -f --less)"
             # Bonsai refers to the now archived repo https://github.com/mitchweaver/bonsai
             has bonsai     && tot bonsai list
-            has pkg_info   && tot pkg_info -i
+            # Rad refers to https://github.com/glaucuslinux/rad
             has rad        && tot rad -cl
-            has radula     && tot radula -cl # 'Rad' was previously called 'Radula', some systems may still have the old name.
+            # Rad was previously called 'Radula', some systems may still have the old name.
+            has radula     && tot radula -cl
             has urpmq      && tot urpmq --list-media active
+            # https://github.com/birb-linux/birb
             has birb       && tot birb --list-installed
             
 
