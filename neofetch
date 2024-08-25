@@ -2296,12 +2296,12 @@ get_packages() {
 
             # Get AppImageLauncher Application directory, 
             # See: https://github.com/TheAssassin/AppImageLauncher/wiki/Configuration#settings-file
-            manager=appimage && has appimaged || [ -f $HOME/.config/appimagelauncher.cfg ] &&
-            if [ -f $HOME/.config/appimagelauncher.cfg ]; then
-                ALDIR=$(cat $HOME/.config/appimagelauncher.cfg | grep "destination" --color=never | sed 's/^.*= //')
-                [ $(ls -w 1 $ALDIR | grep -ic "AppImage") = "0" ] && unset ALDIR
+            manager=appimage && has appimaged || [ -f "$HOME"/.config/appimagelauncher.cfg ] &&
+            if [ -f "$HOME"/.config/appimagelauncher.cfg ]; then
+                ALDIR=$(grep "destination" "$HOME/.config/appimagelauncher.cfg" --color=never | sed 's/^.*= //')
+                [ "$(ls -w 1 "$ALDIR" | grep -ic "AppImage")" = "0" ] && unset ALDIR
             fi &&
-            if [ -f $HOME/.local/bin/*.[Aa]pp[Ii]mage ]; then
+            if [ -f "$HOME"/.local/bin/*.[Aa]pp[Ii]mage ]; then
                 AIDIR="$HOME/.local/bin"
             fi &&
             dir "$AIDIR/*.[Aa]pp[Ii]mage \
