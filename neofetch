@@ -2160,7 +2160,6 @@ get_packages() {
             has rad        && tot rad -cl
             # Rad was previously called 'Radula', some systems may still have the old name.
             has radula     && tot radula -cl
-            has urpmq      && tot urpmq --list-media active
             # https://github.com/birb-linux/birb
             has birb       && tot birb --list-installed
             
