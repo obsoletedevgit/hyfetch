@@ -2154,6 +2154,7 @@ get_packages() {
             has squirrel   && tot ls -w 1 /var/packages
             has anise      && tot anise s --installed
             has am         && pac "$(am -f --less)"
+            # Bonsai refers to the now archived repo https://github.com/mitchweaver/bonsai
             has bonsai     && tot bonsai list
             has pkg_info   && tot pkg_info -i
             has guix       && tot guix package --list-installed
