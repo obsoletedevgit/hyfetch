@@ -134,9 +134,11 @@ def unix_read_osc(seq: int) -> str:
             # Terminate with sequence terminator [\ or bell ^G
             if code.endswith('\x1b\\') or code.endswith('\a'):
                 break
-        signal.alarm(0)
     except IOError:
         pass
+    finally:
+        # Disable alarm
+        signal.alarm(0)
 
     # Reset terminal back to normal mode (previously set to raw mode)
     termios.tcsetattr(fd, termios.TCSADRAIN, settings)
