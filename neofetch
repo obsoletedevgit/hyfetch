@@ -3819,11 +3819,18 @@ get_network() {
             ActiveNetwork=$(route get default | grep interface | awk '{print $2}')
             ActiveNetworkName=$(networksetup -listallhardwareports | grep -B 1 "$ActiveNetwork" | awk '/Hardware Port/{print}'| awk '{print $3}')
             if [[ $ActiveNetworkName == "Wi-Fi" ]]; then
-                LinkSpeed="$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk '/maxRate/{print}' | awk '{print $2}' )Mbps"
+                temp_plist="/tmp/neofetch_system_profiler_SPAirPortDataType.xml" # PlistBuddy doesn't support reading from /dev/stdin
+                system_profiler -detailLevel basic -xml SPAirPortDataType > "$temp_plist"
+
+                PhyMode="$(PlistBuddy -c "Print 0:_items:0:spairport_airport_interfaces:0:spairport_current_network_information:spairport_network_phymode" "$temp_plist")" 2>/dev/null
+                LinkSpeed="$(PlistBuddy -c "Print 0:_items:0:spairport_airport_interfaces:0:spairport_current_network_information:spairport_network_rate" "$temp_plist")" 2>/dev/null
+                [ -n "$LinkSpeed" ] && LinkSpeed="$LinkSpeed Mbps"
             else
                 LinkSpeed="$(ifconfig "$ActiveNetwork" | awk '/media/{print}' | sed -E "s/.*\((.*)\).*/\1/")"
             fi
-            network="$ActiveNetwork: $ActiveNetworkName@$LinkSpeed"
+            network="$ActiveNetwork: $ActiveNetworkName"
+            [ -n "$PhyMode" ] && network+=" ($PhyMode)"
+            [ -n "$LinkSpeed" ] && network+=" @ $LinkSpeed"
         ;;
     esac
     while IFS=' ' read -r n i; do
