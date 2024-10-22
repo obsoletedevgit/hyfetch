@@ -2181,6 +2181,7 @@ get_packages() {
             has squirrel   && tot ls /var/packages
             has anise      && tot anise s --installed
             has am         && pac "$(am -f --less)"
+            has port       && pkgs_h=1 tot port installed && ((packages-=1))
 
             # Using the dnf package cache is much faster than rpm.
             if has dnf && type -p sqlite3 >/dev/null && [[ -f /var/cache/dnf/packages.db ]]; then
