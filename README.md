@@ -126,6 +126,66 @@ pip install git+https://github.com/hykilpikonna/hyfetch.git@master
 
 <!-- CHANGELOG STARTS HERE --->
 
+### 1.99.0
+
+This version would be the last version of HyFetch on Python as we migrate to Rust (Huge thanks to everyone on [#317](https://github.com/hykilpikonna/hyfetch/pull/317)!). It will also be an effort to start a transition that phases out the neowofetch/neofetch backend in favor of FastFetch, since the time needed to maintain the NF backend currently exceed our capacity. If you are willing to help maintaining it, please let us know!
+
+* 🌈 **Improve Windows support**
+* 🌈 **Include FastFetch into HyFetch PyPI package**
+* 🌈 Detached our fork from neofetch
+* 🌈 Build architecture-specific wheels for PyPI
+* 🌈 Add plural flag (bc8499e2)
+* 🌈 Add genderflux and girlflux flags (#263)
+* 🌈 Add Fraysexual flag (#277)
+* 🌈 Add Xenogender flag (#309)
+* 🌈 Add Caninekin flag (#318)
+* 🌈 Add Kenochoric, veldian, solian, lunian flags (#331)
+* 🌈 Add Polyamorous, sapphic, androgyne, interprogress, progress, intersex, equal-rights, drag, neofluid, genderqueer, and pronoun flags (#342)
+* 🌈 Add Gilbert Baker's original rainbow flag (#284) 
+* 🌈 Fix distro logo triple-quotation mark escaping (#222)
+* 🌈 Fix Windows encoding issue on non-English systems (#294)
+* 🌈 Fix termux compatibility (#286)
+* 🌈 Fix term background detection not resetting properly (#298)
+* 🌈 Make typing-extensions optional (#299)
+* 🌈 Remove setuptools dependency (#325)
+* 🌈 Allow lightness value without a '%' sign in config prompt (#307)
+* 🖼 OS - Update Apple hardware ID list (#256)
+* 🖼 OS - Remove Lilu detection for hackintosh (#310)
+* 🖼 OS - Support host info on PowerPC Macs (#341)
+* 🖼 DE - Show Kinfo for Plasma 6 (#269)
+* 🖼 GPU - Fix GPU not displaying in Haiku (dylanaraps#2448)
+* 🖼 GPU - List all intel GPU as detected (#348)
+* 🖼 Distro - Add eweOS (#252)
+* 🖼 Distro - Add Fedora Immutable distros (dylanaraps#2434)
+* 🖼 Distro - Add Macaroni OS (dylanaraps#2424)
+* 🖼 Distro - Add Ironclad OS (#219)
+* 🖼 Distro - Add Chimera Linux (#285)
+* 🖼 Distro - Add Tatra (dylanaraps#2439)
+* 🖼 Distro - Add Furreto Linux (#290)
+* 🖼 Distro - Add BlackMesa (#316)
+* 🖼 Distro - Add Magix (#338)
+* 🖼 Distro - Add Mauna (#343)
+* 🖼 Distro - Add Arkane Linux (#321)
+* 🖼 Distro - Add Linux From Scratch (#336)
+* 🖼 Distro - Fix debian version on Ubuntu (#195)
+* 🖼 Ascii - Update PikaOS logo (#231)
+* 🖼 Ascii - Add Fedora unicode logo (#238)
+* 🖼 Ascii - Fix colors not reverting properly (#314)
+* 🖼 Ascii - Fix AmogOS backslash escape (#339)
+* 🖼 Terminal - Fix terminal emulator selection (#220)
+* 🖼 Terminal - Fix terminal font info for yakuake (#235)
+* 🖼 Terminal - Add Apple Terminal (#272)
+* 🖼 Editor - Display neovim version (#267)
+* 🖼 Package - Add an option to hide some package managers (#257)
+* 🖼 Package - Add "AM" application manager (#234)
+* 🖼 Package - Fix npm list count mismatch (#240)
+* 🖼 Package - Add pnpm (#288)
+* 🖼 Package - Add pkgx.sh (#265)
+* 🖼 Package - Add MacPorts for Linux support (#340)
+* 🖼 Package - Use XDG path for Nix package counting (#255)
+* 🖼 Song - Add Cider player (#245)
+* 🖼 Network - Fix network speed detection on macOS (#360)
+
 ### 1.4.11
 
 * 🌈 Add ability to set backend args in hyfetch config file ([#181](https://github.com/hykilpikonna/hyfetch/pull/181))
