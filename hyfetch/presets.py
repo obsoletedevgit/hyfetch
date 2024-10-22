@@ -585,6 +585,16 @@ PRESETS: dict[str, ColorProfile] = {
         '#FFF798',
     ]),
 
+    'pangender.contrast': ColorProfile([
+        '#ffe87f',
+        '#fcbaa6',
+        '#fbc9f3',
+        '#FFFFFF',
+        '#fbc9f3',
+        '#fcbaa6',
+        '#ffe87f',
+    ]),
+
     'gendernonconforming1': ColorProfile(
         ColorProfile([
             '#50284d',
