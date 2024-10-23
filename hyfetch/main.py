@@ -309,8 +309,11 @@ def create_config() -> Config:
         printc('- &bqwqfetch&r: Pure python, &nminimal dependencies&r ' +
                ('&c(Not installed)' if not has_qwqfetch else ''))
         print()
+        
+        # Use fastfetch as the default backend if it is installed
+        def_backend = 'neofetch' if ff_path is None else 'fastfetch'
 
-        return literal_input('Your choice?', ['neofetch', 'fastfetch', 'qwqfetch'], 'neofetch')
+        return literal_input('Your choice?', ['neofetch', 'fastfetch', 'qwqfetch'], def_backend)
 
     backend = select_backend()
     update_title('Selected backend', backend)
