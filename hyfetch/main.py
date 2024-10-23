@@ -14,6 +14,7 @@ from . import termenv, neofetch_util, pride_month
 from .color_scale import Scale
 from .color_util import clear_screen
 from .constants import *
+from .font_logo import get_font_logo
 from .models import Config
 from .neofetch_util import *
 from .presets import PRESETS
@@ -347,6 +348,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument('--distro', '--test-distro', dest='distro', help=f'Test for a specific distro')
     parser.add_argument('--ascii-file', help='Use a specific file for the ascii art')
+    parser.add_argument('--print-font-logo', action='store_true', help='Print the Font Logo / Nerd Font icon of your distro and exit')
 
     # Hidden debug arguments
     # --test-print: Print the ascii distro and exit
@@ -389,6 +391,10 @@ def run():
 
     if args.test_print:
         print(get_distro_ascii())
+        return
+
+    if args.print_font_logo:
+        print(get_font_logo())
         return
 
     # Check if user provided alternative config path

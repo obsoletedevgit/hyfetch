@@ -195,9 +195,9 @@ PRESETS: dict[str, ColorProfile] = {
         '#FF9A98',
         '#FFB883',
         '#FBFFA8',
-	'#85BCFF',
-	'#9D85FF',
-	'#A510FF'
+        '#85BCFF',
+        '#9D85FF',
+        '#A510FF'
     ]),
 
     'agender': ColorProfile([
@@ -510,7 +510,7 @@ PRESETS: dict[str, ColorProfile] = {
         '#740194',
     ]),
 
-    'autoromantic': ColorProfile([ # symbol interpreted
+    'autoromantic': ColorProfile([  # symbol interpreted
         '#99D9EA',
         '#99D9EA',
         '#3DA542',
@@ -585,6 +585,16 @@ PRESETS: dict[str, ColorProfile] = {
         '#FFF798',
     ]),
 
+    'pangender.contrast': ColorProfile([
+        '#ffe87f',
+        '#fcbaa6',
+        '#fbc9f3',
+        '#FFFFFF',
+        '#fbc9f3',
+        '#fcbaa6',
+        '#ffe87f',
+    ]),
+
     'gendernonconforming1': ColorProfile(
         ColorProfile([
             '#50284d',
@@ -595,7 +605,7 @@ PRESETS: dict[str, ColorProfile] = {
             '#96467b',
             '#50284d'
         ]).with_weights([
-            4,1,1,1,1,1,4
+            4, 1, 1, 1, 1, 1, 4
         ])
     ),
 
@@ -642,7 +652,7 @@ PRESETS: dict[str, ColorProfile] = {
     ]),
 
     # gendervoid and related flags sourced from: https://gender.fandom.com/wiki/Gendervoid
-    'gendervoid' : ColorProfile([
+    'gendervoid': ColorProfile([
         "#081149",
         "#4B484B",
         "#000000",
@@ -650,7 +660,7 @@ PRESETS: dict[str, ColorProfile] = {
         "#081149"
     ]),
 
-    'voidgirl' : ColorProfile([
+    'voidgirl': ColorProfile([
         "#180827",
         "#7A5A8B",
         "#E09BED",
@@ -658,7 +668,7 @@ PRESETS: dict[str, ColorProfile] = {
         "#180827"
     ]),
 
-    'voidboy' : ColorProfile([
+    'voidboy': ColorProfile([
         "#0B130C",
         "#547655",
         "#66B969",
@@ -667,27 +677,199 @@ PRESETS: dict[str, ColorProfile] = {
     ]),
 
     # used https://twitter.com/foxbrained/status/1667621855518236674/photo/1 as source and colorpicked
-    'nonhuman-unity' : ColorProfile([
+    'nonhuman-unity': ColorProfile([
         "#177B49",
         "#FFFFFF",
         "#593C90"
     ]),
 
     # used https://pluralpedia.org/w/Plurality#/media/File:Plural-Flag-1.jpg as source and colorpicked
-    'plural' : ColorProfile([
+    'plural': ColorProfile([
         "#2D0625",
-	"#543475",
-	"#7675C3",
-	"#89C7B0",
-	"#F3EDBD",
+        "#543475",
+        "#7675C3",
+        "#89C7B0",
+        "#F3EDBD",
     ]),
-	
+
     # sampled from https://es.m.wikipedia.org/wiki/Archivo:Fraysexual_flag.jpg
     'fraysexual': ColorProfile([
         '#226CB5',
         '#94E7DD',
         '#FFFFFF',
         '#636363',
+    ]),
+
+    'kenochoric': ColorProfile([
+        '#000000',
+        '#2E1569',
+        '#824DB7',
+        '#C7A1D6',
+    ]),
+
+    'veldian': ColorProfile([
+        '#D182A8',
+        '#FAF6E0',
+        '#69ACBE',
+        '#5D448F',
+        '#3A113E',
+    ]),
+
+    'solian': ColorProfile([
+        '#FFF8ED',
+        '#FFE7A8',
+        '#F1B870',
+        '#A56058',
+        '#46281E',
+    ]),
+
+    'lunian': ColorProfile([
+        '#2F0E62',
+        '#6F41B1',
+        '#889FDF',
+        '#7DDFD5',
+        '#D2F2E2',
+    ]),
+
+    # Start of Extras by Jaida Corvera
+    # polyamorous flag colors pulled from https://polyamproud.com/flag
+    'polyam': ColorProfile([
+        "#FFFFFF",
+        "#FCBF00",
+        "#009FE3",
+        "#E50051",
+        "#340C46",
+    ]),
+
+    'sapphic': ColorProfile([
+        "#FD8BA8",
+        "#FBF2FF",
+        "#C76BC5",
+        "#FDD768",
+        "#C76BC5",
+        "#FBF2FF",
+        "#FD8BA8"
+    ]),
+
+    'androgyne': ColorProfile([
+        "#FE007F",
+        "#9832FF",
+        "#00B8E7",
+    ]),
+
+    'interprogress': ColorProfile([
+        "#FFD800",
+        "#7902AA",
+        "#FFFFFF",
+        "#FFAFC8",
+        "#74D7EE",
+        "#613915",
+        "#000000",
+        '#E50000',
+        '#FF8D00',
+        '#FFEE00',
+        '#028121',
+        '#004CFF',
+        '#770088'
+    ]),
+
+    'progress': ColorProfile([
+        "#FFFFFF",
+        "#FFAFC8",
+        "#74D7EE",
+        "#613915",
+        "#000000",
+        '#E50000',
+        '#FF8D00',
+        '#FFEE00',
+        '#028121',
+        '#004CFF',
+        '#770088'
+    ]),
+
+    'intersex': ColorProfile([
+        "#FFD800",
+        "#FFD800",
+        "#7902AA",
+        "#FFD800",
+        "#FFD800"
+    ]),
+
+    'old-polyam': ColorProfile([
+        "#0000FF",
+        "#FF0000",
+        "#FFFF00",
+        "#FF0000",
+        "#000000"
+    ]),
+
+    'equal-rights': ColorProfile([
+        "#0000FF",
+        "#0000FF",
+        "#FFFF00",
+        "#0000FF",
+        "#0000FF",
+        "#FFFF00",
+        "#0000FF",
+        "#0000FF"
+    ]),
+
+    'drag': ColorProfile([
+        "#CC67FF",
+        "#FFFFFF",
+        "#FFA3E3",
+        "#FFFFFF",
+        "#3366FF"
+    ]),
+
+    # Pronoun Flags
+
+    'pronounfluid': ColorProfile([
+        "#ffb3f9",
+        "#ffffff",
+        "#d1fdcb",
+        "#c7b0ff",
+        "#000000",
+        "#b8ccff"
+    ]),
+
+    'pronounflux': ColorProfile([
+        "#fdb3f8",
+        "#b6ccfa",
+        "#18ddd3",
+        "#64ff89",
+        "#ff7690",
+        "#ffffff"
+    ]),
+
+    'exipronoun': ColorProfile([
+        "#1c3d34",
+        "#ffffff",
+        "#321848",
+        "#000000"
+    ]),
+
+    'neopronoun': ColorProfile([
+        "#bcec64",
+        "#ffffff",
+        "#38077a"
+    ]),
+
+    'neofluid': ColorProfile([
+        "#ffeca0",
+        "#ffffff",
+        "#ffeca0",
+        "#38087a",
+        "#bcec64"
+    ]),
+
+    'genderqueer': ColorProfile([
+        "#b57edc",
+        "#b57edc",
+        "#ffffff",
+        "#ffffff",
+        "#4a8123",
+        "#4a8123"
     ]),
 
     # Meme flags
@@ -718,5 +900,15 @@ PRESETS: dict[str, ColorProfile] = {
         '#1B86BC',
         '#243897',
         '#6F0A82',
+    ]),
+    # this is 4 all the dogs, from zombpawcoins on tumblr!
+    'caninekin': ColorProfile([
+        '#2d2822',
+        '#543d25',
+        '#9c754d',
+        '#e8dac2',
+        '#cfad8c',
+        '#b77b55',
+        '#954e31'
     ])
 }
