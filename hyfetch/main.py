@@ -14,6 +14,7 @@ from . import termenv, neofetch_util, pride_month
 from .color_scale import Scale
 from .color_util import clear_screen
 from .constants import *
+from .font_logo import get_font_logo
 from .models import Config
 from .neofetch_util import *
 from .presets import PRESETS
@@ -210,12 +211,15 @@ def create_config() -> Config:
                 return def_lightness
 
             try:
-                lightness = int(lightness[:-1]) / 100 if lightness.endswith('%') else float(lightness)
+                if lightness.endswith('%') or int(lightness) > 1:
+                    lightness = int(lightness[:-1]) / 100 if lightness.endswith('%') else int(lightness) / 100
+                else:
+                    lightness = float(lightness)
                 assert 0 <= lightness <= 1
                 return lightness
 
             except Exception:
-                printc('&cUnable to parse lightness value, please input it as a decimal or percentage (e.g. 0.5 or 50%)')
+                printc('&cUnable to parse lightness value, please enter a lightness value such as 45%, .45, or 45')
 
     lightness = select_lightness()
     _prs = _prs.set_light_dl(lightness, light_dark)
@@ -244,7 +248,7 @@ def create_config() -> Config:
 
         # Random color schemes
         pis = list(range(len(_prs.unique_colors().colors)))
-        slots = list(set(re.findall('(?<=\\${c)[0-9](?=})', asc)))
+        slots = list(set(map(int, re.findall('(?<=\\${c)[0-9](?=})', asc))))
         while len(pis) < len(slots):
             pis += pis
         perm = {p[:len(slots)] for p in permutations(pis)}
@@ -344,6 +348,7 @@ def create_parser() -> argparse.ArgumentParser:
 
     parser.add_argument('--distro', '--test-distro', dest='distro', help=f'Test for a specific distro')
     parser.add_argument('--ascii-file', help='Use a specific file for the ascii art')
+    parser.add_argument('--print-font-logo', action='store_true', help='Print the Font Logo / Nerd Font icon of your distro and exit')
 
     # Hidden debug arguments
     # --test-print: Print the ascii distro and exit
@@ -386,6 +391,10 @@ def run():
 
     if args.test_print:
         print(get_distro_ascii())
+        return
+
+    if args.print_font_logo:
+        print(get_font_logo())
         return
 
     # Check if user provided alternative config path
