@@ -130,6 +130,12 @@ class ColorAlignment:
     @classmethod
     def from_dict(cls, d: dict):
         ca = from_dict(cls, d)
+        # Backward compatibility
+        if type(ca.custom_colors) is not dict:
+            if type(ca.custom_colors) is list:
+                ca.custom_colors = {i + 1: v for i, v in enumerate(ca.custom_colors)}
+            else:
+                ca.custom_colors = {}
         # Fixup: Keys must json serialize as str, so we convert them back to int.
         ca.custom_colors = {int(k): v for k, v in ca.custom_colors.items()}
         return ca
