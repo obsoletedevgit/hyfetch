@@ -2397,15 +2397,25 @@ get_packages() {
         ;;
     esac
 
+    # Count the total number of packages.
+    total_packages=0
+    for manager_info in "${managers[@]}"; do
+        count=$(echo "$manager_info" | awk '{print $1}')
+        total_packages=$((total_packages + count))
+    done
+
     if ((packages == 0)); then
         unset packages
-
     elif [[ $package_managers == on ]]; then
+        # List individual package manager counts
         printf -v packages '%s, ' "${managers[@]}"
         packages=${packages%,*}
-
     elif [[ $package_managers == tiny ]]; then
-        packages+=" (${manager_string%,*})"
+        # Show total count with package manager names
+        packages="$total_packages (${manager_string%,*})"
+    else
+        # Default to showing just the total count
+        packages="$total_packages"
     fi
 
     packages=${packages/pacman-key/pacman}
