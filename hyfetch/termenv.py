@@ -18,7 +18,8 @@ def unix_detect_ansi_mode() -> AnsiMode | None:
 
     :return: Ansi mode
     """
-    if not sys.stdout.isatty():
+    # Check isatty attribute exist before calling it
+    if hasattr(sys.stdout, 'isatty') and not sys.stdout.isatty():
         return 'ansi'
 
     term = os.environ.get('TERM')
@@ -54,7 +55,7 @@ def windows_detect_ansi_mode() -> AnsiMode | None:
 
     :return: Ansi mode
     """
-    if not sys.stdout.isatty():
+    if hasattr(sys.stdout, 'isatty') and not sys.stdout.isatty():
         return 'ansi'
 
     if os.environ.get("ConEmuANSI") == "ON":

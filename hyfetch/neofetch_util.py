@@ -263,6 +263,7 @@ def run_neofetch_cmd(args: str, pipe: bool = False) -> str | None:
 
         full_cmd = [ensure_git_bash(), cmd, *shlex.split(args)]
 
+    full_cmd = [str(c) for c in full_cmd]
     if pipe:
         return check_output(full_cmd).decode().strip()
     else:
@@ -390,7 +391,8 @@ def run_fastfetch(asc: str, args: str = '', legacy: bool = False):
         path.write_text(asc, 'utf-8')
 
         # Call fastfetch with the temp file
-        proc = subprocess.run([ff_path, '--raw' if legacy else '--file-raw', path.absolute(), *shlex.split(args)])
+        proc = subprocess.run([str(ff_path), '--raw' if legacy else '--file-raw',
+                               str(path.absolute()), *shlex.split(args)])
         if proc.returncode == 144:
             printc("&6Error code 144 detected: Please upgrade fastfetch to >=1.8.0 or use the 'fastfetch-old' backend")
 
