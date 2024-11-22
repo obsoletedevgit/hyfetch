@@ -721,7 +721,7 @@ PRESETS: dict[str, ColorProfile] = {
 	'#FEAF02',
 	'#A37000',
     ]),
-	
+
     # colorpicked from https://commons.wikimedia.org/wiki/File:Leather,_Latex,_and_BDSM_pride_-_Light.svg
     'leather': ColorProfile([
 	'#000000',
@@ -751,7 +751,7 @@ PRESETS: dict[str, ColorProfile] = {
 	'#FFFFFF',
 	'#FFFF81',
     ]),
- 
+
     'kenochoric': ColorProfile([
         '#000000',
         '#2E1569',
@@ -939,6 +939,14 @@ PRESETS: dict[str, ColorProfile] = {
         '#FD1C13',
         '#7D3829',
         '#F3A26A',
+    ]),
+
+    'throatlozenges': ColorProfile([
+        "#2759DA",
+        "#03940D",
+        "#F5F100",
+        "#F59B00",
+        "#B71212"
     ]),
 
     # colors from Gilbert Baker's original 1978 flag design
