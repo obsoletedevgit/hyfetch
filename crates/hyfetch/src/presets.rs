@@ -571,7 +571,7 @@ impl Preset {
 
             Self::ThroatLozenges => ColorProfile::from_hex_colors(vec![
                 "#2759DA", "#03940D", "#F5F100", "#F59B00", "#B71212"
-            ])
+            ]),
 
             // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
             Self::Baker => ColorProfile::from_hex_colors(vec![
