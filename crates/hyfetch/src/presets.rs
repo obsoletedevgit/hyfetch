@@ -191,6 +191,9 @@ pub enum Preset {
     /// Meme flag
     Burger,
 
+    /// Meme flag
+    ThroatLozenges,
+
     /// Colors from Gilbert Baker's original 1978 flag design
     Baker,
 }
@@ -565,6 +568,10 @@ impl Preset {
             Self::Burger => ColorProfile::from_hex_colors(vec![
                 "#F3A26A", "#498701", "#FD1C13", "#7D3829", "#F3A26A",
             ]),
+
+            Self::ThroatLozenges => ColorProfile::from_hex_colors(vec![
+                "#2759DA", "#03940D", "#F5F100", "#F59B00", "#B71212"
+            ])
 
             // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
             Self::Baker => ColorProfile::from_hex_colors(vec![
