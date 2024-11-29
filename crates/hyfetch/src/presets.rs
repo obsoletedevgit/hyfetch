@@ -143,6 +143,9 @@ pub enum Preset {
 
     NonhumanUnity,
 
+    /// For all the dogs
+    Caninekin,
+
     Plural,
 
     Fraysexual,
@@ -483,6 +486,11 @@ impl Preset {
             Self::NonhumanUnity => {
                 ColorProfile::from_hex_colors(vec!["#177B49", "#FFFFFF", "#593C90"])
             },
+
+            // used https://www.tumblr.com/zombpawcoins/745062851267493888/caninekin-canine-therian-flag
+            Self::Caninekin => ColorProfile::from_hex_colors(vec![
+                "#2d2822", "#543d25", "#9c754d", "#e8dac2", "#cfad8c", "#b77b55", "#954e31",
+            ]),
 
             // used https://pluralpedia.org/w/Plurality#/media/File:Plural-Flag-1.jpg as source and colorpicked
             Self::Plural => ColorProfile::from_hex_colors(vec![
