@@ -119,6 +119,11 @@ pub enum Preset {
 
     Pangender,
 
+    /// High-contrast version of pangender flag
+    #[serde(rename = "pangender.contrast")]
+    #[strum(serialize = "pangender.contrast")]
+    PangenderContrast,
+
     #[serde(rename = "gendernonconforming1")]
     #[strum(serialize = "gendernonconforming1")]
     GenderNonconforming1,
@@ -438,6 +443,11 @@ impl Preset {
 
             Self::Pangender => ColorProfile::from_hex_colors(vec![
                 "#FFF798", "#FEDDCD", "#FFEBFB", "#FFFFFF", "#FFEBFB", "#FEDDCD", "#FFF798",
+            ]),
+
+            // high-contrast version of pangender flag
+            Self::PangenderContrast => ColorProfile::from_hex_colors(vec![
+                "#ffe87f", "#fcbaa6", "#fbc9f3", "#FFFFFF", "#fbc9f3", "#fcbaa6", "#ffe87f",
             ]),
 
             Self::GenderNonconforming1 => ColorProfile::from_hex_colors(vec![
