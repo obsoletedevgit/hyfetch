@@ -147,6 +147,16 @@ pub enum Preset {
 
     Fraysexual,
 
+    Bear,
+
+    Butch,
+
+    Leather,
+
+    Otter,
+
+    Twink,
+
     Kenochoric,
 
     Veldian,
@@ -484,6 +494,30 @@ impl Preset {
                 ColorProfile::from_hex_colors(vec!["#226CB5", "#94E7DD", "#FFFFFF", "#636363"])
             },
 
+            // sourced from https://commons.wikimedia.org/wiki/File:Bear_Brotherhood_flag.svg
+            Self::Bear => ColorProfile::from_hex_colors(vec![
+                "#623804", "#D56300", "#FEDD63", "#FEE6B8", "#FFFFFF", "#555555",
+            ]),
+
+            // colorpicked from https://commons.wikimedia.org/wiki/File:Butch_Flag.png
+            Self::Butch => ColorProfile::from_hex_colors(vec![
+                "#D72800", "#F17623", "#FF9C56", "#FFFDF6", "#FFCE89", "#FEAF02", "#A37000",
+            ]),
+
+            // colorpicked from https://commons.wikimedia.org/wiki/File:Leather,_Latex,_and_BDSM_pride_-_Light.svg
+            Self::Leather => ColorProfile::from_hex_colors(vec![
+                "#000000", "#252580", "#000000", "#252580", "#FFFFFF", "#252580", "#000000",
+                "#252580", "#000000",
+            ]),
+
+            // colorpicked from https://commons.wikimedia.org/wiki/File:Official_Otter_Pride_Flag_by_Bearbackgear.jpg
+            Self::Otter => ColorProfile::from_hex_colors(vec![
+                "#263881", "#5C9DC9", "#FFFFFF", "#3A291D", "#5C9DC9", "#263881",
+            ]),
+
+            // colorpicked from https://commons.wikimedia.org/wiki/File:Twink_Pride_Flag_(proposed).svg
+            Self::Twink => ColorProfile::from_hex_colors(vec!["#FFB2FF", "#FFFFFF", "#FFFF81"]),
+
             Self::Kenochoric => {
                 ColorProfile::from_hex_colors(vec!["#000000", "#2E1569", "#824DB7", "#C7A1D6"])
             },
@@ -570,7 +604,7 @@ impl Preset {
             ]),
 
             Self::ThroatLozenges => ColorProfile::from_hex_colors(vec![
-                "#2759DA", "#03940D", "#F5F100", "#F59B00", "#B71212"
+                "#2759DA", "#03940D", "#F5F100", "#F59B00", "#B71212",
             ]),
 
             // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
