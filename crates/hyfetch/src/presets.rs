@@ -210,6 +210,8 @@ pub enum Preset {
     Burger,
 
     /// Meme flag
+    #[serde(rename = "throatlozenges")]
+    #[strum(serialize = "throatlozenges")]
     ThroatLozenges,
 
     /// Colors from Gilbert Baker's original 1978 flag design
