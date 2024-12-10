@@ -28,6 +28,7 @@ pub struct Options {
     pub debug: bool,
     pub distro: Option<String>,
     pub ascii_file: Option<PathBuf>,
+    pub print_font_logo: bool,
     pub test_print: bool,
     pub ask_exit: bool,
 }
@@ -157,6 +158,10 @@ BACKEND={{{backends}}}",
     #[cfg(feature = "autocomplete")]
     let ascii_file = ascii_file.complete_shell(ShellComp::Nothing);
     let ascii_file = ascii_file.optional();
+    let print_font_logo = long("print-font-logo")
+        .help("Print the Font Logo / Nerd Font icon of your distro and exit")
+        .switch();
+    // hidden
     let test_print = long("test-print")
         .help("Print the ascii distro and exit")
         .switch()
@@ -179,6 +184,7 @@ BACKEND={{{backends}}}",
         debug,
         distro,
         ascii_file,
+        print_font_logo,
         // hidden
         test_print,
         ask_exit,
