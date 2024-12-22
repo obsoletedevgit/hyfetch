@@ -2,7 +2,7 @@
 
 set -e
 
-#echo "Building the Docker image..."
+echo "Building the Docker image..."
 docker build -t rust-builder-general tools/rust-builder/general
 
 echo "Running the Docker container..."
