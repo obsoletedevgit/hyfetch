@@ -6,9 +6,10 @@ from setuptools import setup, find_namespace_packages
 HERE = Path(__file__).parent
 
 # Load version without importing it (see issue #192 if you are confused)
-VERSION = ""
-for l in (HERE / 'hyfetch' / '__version__.py').read_text().strip().splitlines():
-    exec(l)
+VERSION = [l for l in (HERE / "Cargo.toml").read_text('utf-8').splitlines() if l.startswith("version = ")]
+if len(VERSION) != 1:
+    raise ValueError(f"Cannot determine version from Cargo.toml: {VERSION}")
+VERSION = VERSION[0].split('"')[1]
 
 # The text of the README file
 README = (HERE / "README.md").read_text('utf-8')
