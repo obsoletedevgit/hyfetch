@@ -48,6 +48,7 @@ unicode-normalization = { workspace = true, features = ["std"] }
 enable-ansi-support = { workspace = true, features = [] }
 normpath = { workspace = true, features = [] }
 same-file = { workspace = true, features = [] }
+crossterm = { workspace = true, features = ["windows"] }
 
 [features]
 default = ["autocomplete", "color", "macchina"]
