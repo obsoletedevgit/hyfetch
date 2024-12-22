@@ -6,6 +6,7 @@ from setuptools import setup, find_namespace_packages
 HERE = Path(__file__).parent
 
 # Load version without importing it (see issue #192 if you are confused)
+VERSION = ""
 for l in (HERE / 'hyfetch' / '__version__.py').read_text().strip().splitlines():
     exec(l)
 
@@ -32,6 +33,7 @@ setup(
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
     ],
     packages=find_namespace_packages(exclude=("tools", "tools.*")),
     package_data={'hyfetch': ['hyfetch/*']},
@@ -46,7 +48,8 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "hyfetch=hyfetch.main:run",
+            "hyfetch.py=hyfetch:run_py",
+            "hyfetch=hyfetch:run_rust",
         ]
     },
     scripts=['hyfetch/scripts/neowofetch']
