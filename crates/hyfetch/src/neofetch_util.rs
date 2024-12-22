@@ -6,7 +6,7 @@ use std::io::{self, Write as _};
 use std::path::{PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
-use std::{fmt};
+use std::{env, fmt};
 
 use aho_corasick::AhoCorasick;
 use anyhow::{Context as _, Result};
@@ -22,7 +22,7 @@ use strum::AsRefStr;
 use toml_edit::{value, DocumentMut, Item, Table};
 use tracing::debug;
 use unicode_segmentation::UnicodeSegmentation as _;
-
+use which::which;
 use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
 use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
 use crate::distros::Distro;
@@ -145,10 +145,39 @@ where
     }
 }
 
+/// Add the PyPI pacakge path to the PATH environment variable (for this local process only).
+/// This is done so that `which` can find the commands inside the PyPI package.
+pub fn add_pkg_path() -> Result<()> {
+    // Get PATH
+    let pv = &env::var_os("PATH").context("`PATH` env var is not set or invalid")?;
+    let mut path = env::split_paths(pv).collect::<Vec<_>>();
+    let exe = env::current_exe().context("failed to get path of current running executable")?;
+    let base = exe.parent().unwrap();
+
+    // Add from bin: ../git, ../fastfetch, ../scripts
+    let to_add = ["git", "fastfetch", "scripts", "fastfetch/usr/bin"];
+    if let Some(parent) = base.parent() {
+        path.extend(to_add.iter().map(|d| parent.join(d)));
+    }
+
+    // Add from cwd: ./hyfetch/git, ./hyfetch/fastfetch, ./hyfetch/scripts
+    path.extend(to_add.iter().map(|d| PathBuf::from("hyfetch").join(d)));
+
+    // Set PATH
+    env::set_var("PATH", env::join_paths(path).context("failed to join paths")?);
+    debug!("Added PyPI package path to PATH, PATH={}", env::var("PATH")?);
+
+    Ok(())
+}
+
 /// Gets the absolute path of the [neofetch] command.
 ///
 /// [neofetch]: https://github.com/hykilpikonna/hyfetch#running-updated-original-neofetch
 pub fn neofetch_path() -> Result<PathBuf> {
+    if let Ok(p) = which("neowofetch") {
+        return Ok(p);
+    }
+
     // Instead of doing that, let's write the neofetch script to a temp file
     let f: PathBuf = get_cache_path().context("Failed to get cache path")?.join("nf_script.sh");
     let mut file = fs::File::create(&f).context("Failed to create neofetch script file")?;
@@ -156,43 +185,6 @@ pub fn neofetch_path() -> Result<PathBuf> {
         .context("Failed to write neofetch script to file")?;
 
     Ok(f)
-}
-
-/// Gets the absolute path of the [fastfetch] command.
-///
-/// [fastfetch]: https://github.com/fastfetch-cli/fastfetch
-pub fn fastfetch_path() -> Result<Option<PathBuf>> {
-    let fastfetch_path = {
-        #[cfg(not(windows))]
-        {
-            find_in_path("fastfetch")
-                .context("failed to check existence of `fastfetch` in `PATH`")?
-        }
-        #[cfg(windows)]
-        {
-            find_in_path("fastfetch.exe")
-                .context("failed to check existence of `fastfetch.exe` in `PATH`")?
-        }
-    };
-
-    // Fall back to `fastfetch\fastfetch.exe` in directory of current executable
-    #[cfg(windows)]
-    let fastfetch_path = fastfetch_path.map_or_else(
-        || {
-            let current_exe_path: PathBuf = env::current_exe()
-                .and_then(|p| p.normalize().map(|p| p.into()))
-                .context("failed to get path of current running executable")?;
-            let current_exe_dir_path = current_exe_path
-                .parent()
-                .expect("parent should not be `None`");
-            let fastfetch_path = current_exe_dir_path.join(r"fastfetch\fastfetch.exe");
-            find_file(&fastfetch_path)
-                .with_context(|| format!("failed to check existence of file {fastfetch_path:?}"))
-        },
-        |path| Ok(Some(path)),
-    )?;
-
-    Ok(fastfetch_path)
 }
 
 /// Gets the absolute path of the [macchina] command.
@@ -427,18 +419,19 @@ where
     Ok(out)
 }
 
+pub fn fastfetch_path() -> Result<PathBuf> {
+    which("fastfetch").context("fastfetch command not found")
+}
+
 fn make_fastfetch_command<S>(args: &[S]) -> Result<Command>
 where
     S: AsRef<OsStr>,
 {
     // Find fastfetch executable
-    let fastfetch_path = fastfetch_path()
-        .context("failed to get fastfetch path")?
-        .context("fastfetch command not found")?;
+    let ff_path = fastfetch_path()?;
+    debug!(?ff_path, "fastfetch path");
 
-    debug!(?fastfetch_path, "fastfetch path");
-
-    let mut command = Command::new(fastfetch_path);
+    let mut command = Command::new(ff_path);
     command.args(args);
     Ok(command)
 }

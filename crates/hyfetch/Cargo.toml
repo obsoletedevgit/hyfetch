@@ -38,6 +38,7 @@ toml_edit = { workspace = true, features = [], optional = true }
 tracing = { workspace = true, features = ["attributes", "std"] }
 tracing-subscriber = { workspace = true, features = ["ansi", "fmt", "smallvec", "std", "tracing-log"] }
 unicode-segmentation = { workspace = true, features = [] }
+which = { workspace = true, features = [] }
 
 [build-dependencies]
 indexmap = { workspace = true, features = ["std"] }

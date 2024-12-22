@@ -21,10 +21,7 @@ use hyfetch::color_util::{
 use hyfetch::models::Config;
 #[cfg(feature = "macchina")]
 use hyfetch::neofetch_util::macchina_path;
-use hyfetch::neofetch_util::{
-    self, fastfetch_path, get_distro_ascii, literal_input, ColorAlignment, NEOFETCH_COLORS_AC,
-    NEOFETCH_COLOR_PATTERNS, TEST_ASCII,
-};
+use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
 use hyfetch::presets::{AssignLightness, Preset};
 use hyfetch::pride_month;
 use hyfetch::types::{AnsiMode, Backend, TerminalTheme};
@@ -42,6 +39,8 @@ use time::{Month, OffsetDateTime};
 use tracing::debug;
 
 fn main() -> Result<()> {
+    add_pkg_path().expect("failed to add pkg path");
+    
     #[cfg(windows)]
     if let Err(err) = enable_ansi_support::enable_ansi_support() {
         debug!(%err, "could not enable ANSI escape code support");
@@ -58,20 +57,9 @@ fn main() -> Result<()> {
     // Use a custom distro
     let distro = options.distro.as_ref();
 
-    let backend = options.backend.map_or_else(
-        || {
-            fastfetch_path()
-                .context("failed to get fastfetch path")
-                .map(|fastfetch_path| {
-                    if fastfetch_path.is_some() {
-                        Backend::Fastfetch
-                    } else {
-                        Backend::Neofetch
-                    }
-                })
-        },
-        Ok,
-    )?;
+    let backend = options.backend.unwrap_or_else(|| {
+        if fastfetch_path().is_ok() { Backend::Fastfetch } else { Backend::Neofetch }
+    });
 
     if options.test_print {
         let asc = get_distro_ascii(distro, backend).context("failed to get distro ascii")?;
@@ -956,7 +944,7 @@ fn create_config(
             .context("failed to print title prompt")?;
 
         // Check if fastfetch is installed
-        let fastfetch_path = fastfetch_path().context("failed to get fastfetch path")?;
+        let fastfetch_path = fastfetch_path().ok();
 
         // Check if macchina is installed
         #[cfg(feature = "macchina")]
