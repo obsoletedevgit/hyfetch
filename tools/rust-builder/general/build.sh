@@ -19,6 +19,10 @@ export CARGO_TARGET_RISCV64GC_UNKNOWN_LINUX_MUSL_LINKER=/musl/riscv64/bin/musl-g
 #export CARGO_TARGET_AARCH64_APPLE_DARWIN_LINKER=/osxcross/bin/aarch64-apple-darwin$OSX_VER-clang
 #export CARGO_TARGET_AARCH64_APPLE_DARWIN_AR=/osxcross/bin/aarch64-apple-darwin$OSX_VER-ar
 
+# Add -C relocation-model=static to the build command
+# See https://github.com/rust-lang/rust/issues/95926
+export RUSTFLAGS="-C relocation-model=static"
+
 # Build for platforms
 cargo build --release --target x86_64-unknown-linux-musl
 cargo build --release --target aarch64-unknown-linux-musl
