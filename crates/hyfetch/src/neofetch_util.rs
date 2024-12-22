@@ -3,13 +3,13 @@ use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
 use std::io::{self, Write as _};
-use std::path::{Path, PathBuf};
+use std::path::{PathBuf};
 use std::process::Command;
 use std::sync::OnceLock;
-use std::{env, fmt};
+use std::{fmt};
 
 use aho_corasick::AhoCorasick;
-use anyhow::{anyhow, Context as _, Result};
+use anyhow::{Context as _, Result};
 use indexmap::IndexMap;
 use itertools::Itertools as _;
 #[cfg(windows)]
@@ -27,7 +27,7 @@ use crate::ascii::{RawAsciiArt, RecoloredAsciiArt};
 use crate::color_util::{printc, NeofetchAsciiIndexedColor, PresetIndexedColor};
 use crate::distros::Distro;
 use crate::types::{AnsiMode, Backend};
-use crate::utils::{find_file, find_in_path, input, process_command_status};
+use crate::utils::{find_in_path, get_cache_path, input, process_command_status};
 
 pub const TEST_ASCII: &str = r####################"
 ### |\___/| ###
@@ -47,6 +47,7 @@ _/\_\_   _/_/\_
 pub const NEOFETCH_COLOR_PATTERNS: [&str; 6] =
     ["${c1}", "${c2}", "${c3}", "${c4}", "${c5}", "${c6}"];
 pub static NEOFETCH_COLORS_AC: OnceLock<AhoCorasick> = OnceLock::new();
+pub const NEOFETCH_SCRIPT: &str = include_str!("../../../neofetch");
 
 #[derive(Clone, Eq, PartialEq, Debug, AsRefStr, Deserialize, Serialize)]
 #[serde(tag = "mode")]
@@ -147,51 +148,14 @@ where
 /// Gets the absolute path of the [neofetch] command.
 ///
 /// [neofetch]: https://github.com/hykilpikonna/hyfetch#running-updated-original-neofetch
-pub fn neofetch_path() -> Result<Option<PathBuf>> {
-    if let Some(workspace_dir) = env::var_os("CARGO_WORKSPACE_DIR") {
-        debug!(
-            ?workspace_dir,
-            "CARGO_WORKSPACE_DIR env var is set; using neofetch from project directory"
-        );
-        let workspace_path = Path::new(&workspace_dir);
-        let workspace_path = match workspace_path.try_exists() {
-            Ok(true) => workspace_path,
-            Ok(false) => {
-                return Err(anyhow!(
-                    "{workspace_path:?} does not exist or is not readable"
-                ));
-            },
-            Err(err) => {
-                return Err(err)
-                    .with_context(|| format!("failed to check existence of {workspace_path:?}"));
-            },
-        };
-        let neofetch_path = workspace_path.join("neofetch");
-        return find_file(&neofetch_path)
-            .with_context(|| format!("failed to check existence of file {neofetch_path:?}"));
-    }
+pub fn neofetch_path() -> Result<PathBuf> {
+    // Instead of doing that, let's write the neofetch script to a temp file
+    let f: PathBuf = get_cache_path().context("Failed to get cache path")?.join("nf_script.sh");
+    let mut file = fs::File::create(&f).context("Failed to create neofetch script file")?;
+    file.write_all(NEOFETCH_SCRIPT.as_bytes())
+        .context("Failed to write neofetch script to file")?;
 
-    let neowofetch_path = find_in_path("neowofetch")
-        .context("failed to check existence of `neowofetch` in `PATH`")?;
-
-    // Fall back to `neowofetch` in directory of current executable
-    #[cfg(windows)]
-    let neowofetch_path = neowofetch_path.map_or_else(
-        || {
-            let current_exe_path: PathBuf = env::current_exe()
-                .and_then(|p| p.normalize().map(|p| p.into()))
-                .context("failed to get path of current running executable")?;
-            let neowofetch_path = current_exe_path
-                .parent()
-                .expect("parent should not be `None`")
-                .join("neowofetch");
-            find_file(&neowofetch_path)
-                .with_context(|| format!("failed to check existence of file {neowofetch_path:?}"))
-        },
-        |path| Ok(Some(path)),
-    )?;
-
-    Ok(neowofetch_path)
+    Ok(f)
 }
 
 /// Gets the absolute path of the [fastfetch] command.
@@ -422,15 +386,14 @@ where
     S: AsRef<OsStr>,
 {
     // Find neofetch script
-    let neofetch_path = neofetch_path()
-        .context("failed to get neofetch path")?
-        .context("neofetch command not found")?;
+    let neofetch_path = neofetch_path().context("neofetch command not found")?;
 
     debug!(?neofetch_path, "neofetch path");
 
     #[cfg(not(windows))]
     {
-        let mut command = Command::new(neofetch_path);
+        let mut command = Command::new("bash");
+        command.arg(neofetch_path);
         command.args(args);
         Ok(command)
     }
