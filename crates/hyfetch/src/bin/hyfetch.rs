@@ -229,10 +229,11 @@ fn create_config(
         } else if color_level.has_256 {
             AnsiMode::Ansi256
         } else if color_level.has_basic {
-            unimplemented!(
-                "{mode} color mode not supported",
-                mode = AnsiMode::Ansi16.as_ref()
-            );
+            // unimplemented!(
+            //     "{mode} color mode not supported",
+            //     mode = AnsiMode::Ansi16.as_ref()
+            // );
+            AnsiMode::Ansi256
         } else {
             unreachable!();
         }

@@ -2,8 +2,6 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
-#[cfg(windows)]
-use std::io;
 use std::io::{self, Write as _};
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -315,16 +313,10 @@ pub fn run(asc: RecoloredAsciiArt, backend: Backend, args: Option<&Vec<String>>)
     let asc = asc.lines.join("\n");
 
     match backend {
-        Backend::Neofetch => {
-            run_neofetch(asc, args).context("failed to run neofetch")?;
-        },
-        Backend::Fastfetch => {
-            run_fastfetch(asc, args).context("failed to run fastfetch")?;
-        },
+        Backend::Neofetch => run_neofetch(asc, args).context("failed to run neofetch")?,
+        Backend::Fastfetch => run_fastfetch(asc, args).context("failed to run fastfetch")?,
         #[cfg(feature = "macchina")]
-        Backend::Macchina => {
-            run_macchina(asc, args).context("failed to run macchina")?;
-        },
+        Backend::Macchina => run_macchina(asc, args).context("failed to run macchina")?,
     }
 
     Ok(())
@@ -379,98 +371,30 @@ where
 #[cfg(windows)]
 fn bash_path() -> Result<PathBuf> {
     // Find `bash.exe` in `PATH`, but exclude the known bad paths
-    let bash_path = find_in_path("bash.exe")
-        .context("failed to check existence of `bash.exe` in `PATH`")?
-        .map_or_else(
-            || Ok(None),
-            |bash_path| {
-                if bash_path.ends_with(r"Git\usr\bin\bash.exe") {
-                    // See https://stackoverflow.com/a/58418686/1529493
-                    Ok(None)
-                } else {
-                    // See https://github.com/hykilpikonna/hyfetch/issues/233
-                    let windir = env::var_os("windir")
-                        .context("`windir` environment variable is not set or invalid")?;
-                    match is_same_file(&bash_path, Path::new(&windir).join(r"System32\bash.exe")) {
-                        Ok(true) => Ok(None),
-                        Ok(false) => Ok(Some(bash_path)),
-                        Err(err) if err.kind() == io::ErrorKind::NotFound => Ok(Some(bash_path)),
-                        Err(err) => {
-                            Err(err).context("failed to check if paths refer to the same file")
-                        },
-                    }
-                }
-            },
-        )?;
-
-    // Detect any Git for Windows installation in `PATH`
-    let bash_path = bash_path.map_or_else(
-        || {
-            let git_path = find_in_path("git.exe")
-                .context("failed to check existence of `git.exe` in `PATH`")?;
-            match git_path {
-                Some(git_path) if git_path.ends_with(r"Git\cmd\git.exe") => {
-                    let bash_path = git_path
-                        .parent()
-                        .expect("parent should not be `None`")
-                        .parent()
-                        .expect("parent should not be `None`")
-                        .join(r"bin\bash.exe");
-                    if bash_path.is_file() {
-                        Ok(Some(bash_path))
-                    } else {
-                        Ok(None)
-                    }
-                },
-                _ => Ok(None),
+    if let Some(bash_path) = find_in_path("bash.exe").context("bash.exe not found")? {
+        // Check if it's not MSYS bash https://stackoverflow.com/a/58418686/1529493
+        if !bash_path.ends_with(r"Git\usr\bin\bash.exe") {
+            // Check if it's not WSL bash
+            // See https://github.com/hykilpikonna/hyfetch/issues/233
+            let windir = env::var_os("windir").context("`windir` environ not found")?;
+            match is_same_file(&bash_path, Path::new(&windir).join(r"System32\bash.exe")) {
+                Ok(false) => return Ok(bash_path),
+                Err(err) if err.kind() == io::ErrorKind::NotFound => return Ok(bash_path),
+                _ => {}
             }
-        },
-        |path| Ok(Some(path)),
-    )?;
+        }
+    }
 
-    // Fall back to default Git for Windows installation paths
-    let bash_path = bash_path
-        .or_else(|| {
-            let program_files_dir = env::var_os("ProgramFiles")?;
-            let bash_path = Path::new(&program_files_dir).join(r"Git\bin\bash.exe");
-            if bash_path.is_file() {
-                Some(bash_path)
-            } else {
-                None
+    if let Some(bash_path) = find_in_path("git.exe").context("failed to find `git.exe` in `PATH`")? {
+        if bash_path.ends_with(r"Git\cmd\git.exe") {
+            let pth = bash_path.parent().unwrap().parent().unwrap().join(r"bin\bash.exe");
+            if pth.is_file() {
+                return Ok(pth);
             }
-        })
-        .or_else(|| {
-            let program_files_x86_dir = env::var_os("ProgramFiles(x86)")?;
-            let bash_path = Path::new(&program_files_x86_dir).join(r"Git\bin\bash.exe");
-            if bash_path.is_file() {
-                Some(bash_path)
-            } else {
-                None
-            }
-        });
+        }
+    }
 
-    // Bundled git bash
-    let bash_path = bash_path.map_or_else(
-        || {
-            let current_exe_path: PathBuf = env::current_exe()
-                .and_then(|p| p.normalize().map(|p| p.into()))
-                .context("failed to get path of current running executable")?;
-            let bash_path = current_exe_path
-                .parent()
-                .expect("parent should not be `None`")
-                .join(r"git\bin\bash.exe");
-            if bash_path.is_file() {
-                Ok(Some(bash_path))
-            } else {
-                Ok(None)
-            }
-        },
-        |path| Ok(Some(path)),
-    )?;
-
-    let bash_path = bash_path.context("bash command not found")?;
-
-    Ok(bash_path)
+    Err(anyhow!("bash.exe not found"))
 }
 
 /// Runs neofetch command, returning the piped stdout output.
