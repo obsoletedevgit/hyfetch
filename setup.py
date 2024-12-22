@@ -48,8 +48,9 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "hyfetch.py=hyfetch:run_py",
-            "hyfetch=hyfetch:run_rust",
+            "hyfetch.v1=hyfetch.__main__:run_py",
+            "hyfetch.rs=hyfetch.__main__:run_rust",
+            "hyfetch=hyfetch.__main__:run_rust",
         ]
     },
     scripts=['hyfetch/scripts/neowofetch']
