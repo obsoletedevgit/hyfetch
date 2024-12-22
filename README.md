@@ -16,15 +16,16 @@ This repo also serves as an updated version of the original `neofetch` since the
 
 ## Installation
 
-### Method 1: Install using Python pip (Recommended)
+### Method 1: Install using pip (Recommended)
 
-Install Python >= 3.7 first. Then, just do:
+Even though hyfetch has been rewritten in Rust since 2.0.0, we also published PyPI packages with prebuilt rust binaries to allow seamless transition from the Python version. You can install the rust binaries using pip:
 
 ```sh
+pip install wheel
 pip install -U hyfetch
-# or
-pipx install hyfetch
 ```
+
+If a rust binary is not available for your platform (e.g. riscv64), it will automatically fall back to the v1.99.0 Python version.
 
 ### Method 2: Install using system package manager
 
@@ -44,16 +45,18 @@ Currently, these distributions have existing packages for HyFetch:
 
 [![Packaging status](https://repology.org/badge/vertical-allrepos/hyfetch.svg?columns=4&exclude_unsupported=1)](https://repology.org/project/hyfetch/versions)
 
-### Method 3: Install the latest developmental version using git
+### Method 3: Install using Cargo
 
-Install Python >= 3.7 first. Then run the following commands:
+Since hyfetch has been rewritten in Rust since 2.0.0, you can now install it using Cargo:
 
 ```sh
-git clone https://github.com/hykilpikonna/hyfetch.git
-cd hyfetch
-pip install .
+cargo install hyfetch
 ```
 
+> [!WARNING]
+> If you install using Cargo, you would need to manually install dependencies like fastfetch if you want to use it as the backend, and Git Bash if you're on Windows.
+>
+> The PyPI package has all the dependencies bundled, so it's recommended to use that instead.
 
 ## Usage
 
