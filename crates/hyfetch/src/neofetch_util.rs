@@ -13,6 +13,12 @@ use anyhow::{Context as _, Result};
 use indexmap::IndexMap;
 use itertools::Itertools as _;
 #[cfg(windows)]
+use anyhow::anyhow;
+#[cfg(windows)]
+use crate::utils::find_file;
+#[cfg(windows)]
+use std::path::Path;
+#[cfg(windows)]
 use normpath::PathExt as _;
 #[cfg(windows)]
 use same_file::is_same_file;

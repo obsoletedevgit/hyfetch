@@ -24,7 +24,7 @@ twine check dist/*.tar.gz
 twine check dist/*.whl
 
 # Build rust package
-#"$DIR/build_rust.sh"
+"$DIR/build_rust.sh"
 
 # =================
 # Build for windows
