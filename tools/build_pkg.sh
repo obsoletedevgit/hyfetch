@@ -110,7 +110,6 @@ function build_for_platform() {
 build_for_platform "linux-amd64" "manylinux_2_31_x86_64"
 build_for_platform "linux-aarch64" "manylinux_2_31_aarch64"
 build_for_platform "linux-armv7l" "manylinux_2_31_armv7l"
-# build_for_platform "linux-riscv64" "manylinux_2_31_riscv64"
 # There doesn't seem to be tags for freebsd?
 # build_for_platform "freebsd-amd64" "freebsd_x86_64"
 # build_for_platform "freebsd-aarch64" "freebsd_aarch64"
@@ -119,7 +118,8 @@ build_for_platform "musl-amd64" "musllinux_1_1_x86_64"
 # The official fastfetch build uses macOS 12.0
 build_for_platform "macos-universal" "macosx_11_0_x86_64"
 build_for_platform "macos-universal" "macosx_11_0_arm64"
-# TODO: linux_riscv64
+# TODO: linux_riscv64 (pypi's platform tag support is not there yet)
+# build_for_platform "linux-riscv64" "manylinux_2_31_riscv64"
 
 # Finally, remove temporary files
 rm -rf wheel git
