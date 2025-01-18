@@ -831,6 +831,7 @@ fn create_config(
         let preset_index_permutations: IndexSet<Vec<PresetIndexedColor>> = preset_indices
             .into_iter()
             .permutations(slots.len())
+            .take(1000)
             .collect();
         let random_count = u16::from(ascii_per_row)
             .checked_mul(u16::from(ascii_rows))
