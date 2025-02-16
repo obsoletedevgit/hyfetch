@@ -202,6 +202,11 @@ pub enum Preset {
     Neofluid,
 
     Genderqueer,
+    
+    Cisgender,
+
+    /// Colors from Gilbert Baker's original 1978 flag design
+    Baker,
 
     /// Meme flag
     Beiyang,
@@ -216,9 +221,6 @@ pub enum Preset {
 
     /// Meme flag
     Band,
-
-    /// Colors from Gilbert Baker's original 1978 flag design
-    Baker,
 }
 
 #[derive(Clone, Eq, PartialEq, Debug)]
@@ -614,9 +616,18 @@ impl Preset {
                 "#FFECA0", "#FFFFFF", "#FFECA0", "#38087A", "#BCEC64",
             ]),
 
-            Self::Genderqueer => {
-                ColorProfile::from_hex_colors(vec!["#B57EDC", "#FFFFFF", "#4A8123"])
-            },
+            Self::Genderqueer => ColorProfile::from_hex_colors(vec![
+                "#B57EDC", "#FFFFFF", "#4A8123"
+            ]),
+
+            Self::Cisgender => ColorProfile::from_hex_colors(vec![
+                "#D70270", "#0038A7"
+            ]),
+
+            // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
+            Self::Baker => ColorProfile::from_hex_colors(vec![
+                "#F23D9E", "#F80A24", "#F78022", "#F9E81F", "#1E972E", "#1B86BC", "#243897", "#6F0A82",
+            ]),
 
             Self::Beiyang => ColorProfile::from_hex_colors(vec![
                 "#DF1B12", "#FFC600", "#01639D", "#FFFFFF", "#000000",
@@ -634,12 +645,6 @@ impl Preset {
                 "#2670C0", "#F5BD00", "#DC0045", "#E0608E"
             ]),
 
-
-            // used https://gilbertbaker.com/rainbow-flag-color-meanings/ as source and colorpicked
-            Self::Baker => ColorProfile::from_hex_colors(vec![
-                "#F23D9E", "#F80A24", "#F78022", "#F9E81F", "#1E972E", "#1B86BC", "#243897",
-                "#6F0A82",
-            ]),
         })
         .expect("preset color profiles should be valid")
     }
