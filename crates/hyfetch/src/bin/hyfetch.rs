@@ -247,7 +247,10 @@ fn create_config(
     });
     debug!(?det_ansi, "detected color mode");
 
-    let asc = get_distro_ascii(distro, backend).context("failed to get distro ascii")?;
+    // Try to get ascii from given backend first, if it fails, try neofetch backend
+    let asc = get_distro_ascii(distro, backend).or_else(|_| {
+        get_distro_ascii(distro, Backend::Neofetch).context("failed to get distro ascii from neofetch backend")
+    })?;
     let asc = asc.to_normalized().context("failed to normalize ascii")?;
     let theme = det_bg.map(|bg| bg.theme()).unwrap_or_default();
     let color_mode = det_ansi.unwrap_or(AnsiMode::Ansi256);
