@@ -25,24 +25,18 @@ impl AsciiDistro {
     }
 }
 
-fn anything_that_exist(paths: &[&Path]) -> Option<PathBuf> {
-    paths.iter().copied().find(|p| p.exists()).map(Path::to_path_buf)
-}
-
 fn main() {
     // Path hack to make file paths work in both workspace and manifest directory
-    let p_ws = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap());
-    let p_mn = PathBuf::from(env::var_os("CARGO_MANIFEST_DIR").unwrap()); 
+    let dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap_or_else(|| env::var_os("CARGO_MANIFEST_DIR").unwrap()));
     let o = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     
     for file in &["neofetch", "hyfetch"] {
-        let src = anything_that_exist(&[&p_ws.join(file), &p_mn.join(file)])
-            .expect(&format!("{} not found in workspace or manifest directory", file));
+        let src = dir.join(file);
         let dst = o.join(file);
         println!("cargo:rerun-if-changed={}", src.display());
 
         // Copy either file or directory
-        if src.is_dir() { 
+        if src.is_dir() {
             let opt = CopyOptions { overwrite: true, copy_inside: true, ..CopyOptions::default() };
             fs_extra::dir::copy(&src, &dst, &opt).expect("Failed to copy directory to OUT_DIR");
         }
