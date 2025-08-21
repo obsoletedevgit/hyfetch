@@ -3,7 +3,7 @@ use crate::types::Backend;
 use crate::utils::get_cache_path;
 use anyhow::{Context, Result};
 use std::collections::HashMap;
-use std::fs::{self, File};
+use std::fs::{File};
 use std::io::{Read, Write};
 
 const FONT_LOGOS: &str = include_str!(concat!(env!("OUT_DIR"), "/hyfetch/data/font_logos.json"));
