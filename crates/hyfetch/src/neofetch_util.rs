@@ -486,16 +486,13 @@ pub fn get_distro_name(backend: Backend) -> Result<String> {
     match backend {
         Backend::Neofetch => run_neofetch_command_piped(&["ascii_distro_name"])
             .context("failed to get distro name from neofetch"),
-        Backend::Fastfetch => run_fastfetch_command_piped(&[
+        Backend::Fastfetch => Ok(run_fastfetch_command_piped(&[
             "--logo",
             "none",
             "-s",
             "OS",
             "--disable-linewrap",
-            "--os-key",
-            " ",
-        ])
-        .context("failed to get distro name from fastfetch"),
+        ]).context("failed to get distro name from fastfetch")?.replace("OS: ", "")),
         #[cfg(feature = "macchina")]
         Backend::Macchina => {
             // Write ascii art to temp file
