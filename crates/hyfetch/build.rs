@@ -29,7 +29,7 @@ fn main() {
     // Path hack to make file paths work in both workspace and manifest directory
     let dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap_or_else(|| env::var_os("CARGO_MANIFEST_DIR").unwrap()));
     let o = PathBuf::from(env::var_os("OUT_DIR").unwrap());
-    
+
     // Ensure output directory exists
     if !o.exists() {
         fs::create_dir_all(&o).expect("Failed to create OUT_DIR");
@@ -45,7 +45,19 @@ fn main() {
             let opt = CopyOptions { overwrite: true, copy_inside: true, ..CopyOptions::default() };
             fs_extra::dir::copy(&src, &dst, &opt).expect("Failed to copy directory to OUT_DIR");
         }
-        else { fs::copy(&src, &dst).expect("Failed to copy file to OUT_DIR"); }
+        else {
+            // Check src exists
+            if !src.exists() {
+                panic!("Source file {} does not exist", src.display());
+            }
+            // Check dst parent exists
+            if let Some(parent) = dst.parent() {
+                if !parent.exists() {
+                    fs::create_dir_all(parent).expect("Failed to create parent directory for OUT_DIR");
+                }
+            }
+            fs::copy(&src, &dst).expect("Failed to copy file to OUT_DIR");
+        }
     }
 
     export_distros(&o.join("neofetch"), &o);
