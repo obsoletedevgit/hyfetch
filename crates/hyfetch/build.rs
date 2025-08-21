@@ -37,7 +37,7 @@ fn main() {
     for file in &["neofetch", "hyfetch"] {
         let src = anything_that_exist(&[
             &dir.join(file),
-            &dir.join("/../../").join(file),
+            &dir.join("../../").join(file),
         ]).expect("couldn't find neofetch");
         let dst = o.join(file);
         println!("cargo:rerun-if-changed={}", src.display());
