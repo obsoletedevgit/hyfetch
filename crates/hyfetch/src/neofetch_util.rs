@@ -53,7 +53,7 @@ _/\_\_   _/_/\_
 pub const NEOFETCH_COLOR_PATTERNS: [&str; 6] =
     ["${c1}", "${c2}", "${c3}", "${c4}", "${c5}", "${c6}"];
 pub static NEOFETCH_COLORS_AC: OnceLock<AhoCorasick> = OnceLock::new();
-pub const NEOFETCH_SCRIPT: &str = include_str!(concat!(env!("CARGO_WORKSPACE_DIR"), "/neofetch"));
+pub const NEOFETCH_SCRIPT: &str = include_str!(concat!(env!("OUT_DIR"), "/neofetch"));
 
 #[derive(Clone, Eq, PartialEq, Debug, AsRefStr, Deserialize, Serialize)]
 #[serde(tag = "mode")]

@@ -44,6 +44,7 @@ which = { workspace = true, features = [] }
 indexmap = { workspace = true, features = ["std"] }
 regex = { workspace = true, features = ["perf", "std", "unicode"] }
 unicode-normalization = { workspace = true, features = ["std"] }
+fs_extra = "1.3.0"
 
 [target.'cfg(windows)'.dependencies]
 enable-ansi-support = { workspace = true, features = [] }

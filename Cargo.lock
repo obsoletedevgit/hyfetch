@@ -221,6 +221,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "37909eebbb50d72f9059c3b6d82c0463f2ff062c9e95845c43a6c9c0355411be"
 
 [[package]]
+name = "fs_extra"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
+
+[[package]]
 name = "getrandom"
 version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -245,7 +251,7 @@ checksum = "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea"
 
 [[package]]
 name = "hyfetch"
-version = "2.0.0-rc3"
+version = "2.0.0-rc4"
 dependencies = [
  "aho-corasick",
  "ansi_colours",
@@ -258,6 +264,7 @@ dependencies = [
  "enable-ansi-support",
  "enterpolation",
  "fastrand",
+ "fs_extra",
  "indexmap",
  "itertools",
  "normpath",
