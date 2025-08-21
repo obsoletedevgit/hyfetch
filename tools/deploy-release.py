@@ -93,7 +93,7 @@ def finalize_neofetch():
     # 2. Regenerate man page
     print('Regenerating neofetch man page...')
     Path('docs/neofetch.1').write_text(subprocess.check_output(['help2man', './neofetch']).decode())
-    Path('docs/hyfetch.1').write_text(subprocess.check_output(['help2man', 'python3 -m hyfetch']).decode())
+    Path('docs/hyfetch.1').write_text(subprocess.check_output(['help2man', 'cargo run --']).decode())
 
     # 3. Reformat readme links
     print('Reformatting readme links...')
@@ -139,6 +139,10 @@ def deploy():
     """
     print('Deploying to pypi...')
     subprocess.check_call(['bash', 'tools/deploy.sh'])
+    print('Done!')
+    
+    print('Deploying to crates.io...')
+    subprocess.check_call(['bash', 'tools/deploy-crate.sh'])
     print('Done!')
 
     print('Deploying to npm...')
