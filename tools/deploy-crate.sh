@@ -14,7 +14,7 @@ mkdir -p "$CARGO_ROOT/hyfetch"
 cp -r "$SRC_ROOT/hyfetch/data" "$CARGO_ROOT/hyfetch/"
 
 # Build the crate
-cargo publish -p hyfetch --dry-run --allow-dirty
+cargo publish -p hyfetch --allow-dirty "$@"
 
 # Delete the copied files
 rm "$CARGO_ROOT/neofetch"
