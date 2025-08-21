@@ -248,9 +248,7 @@ fn create_config(
     debug!(?det_ansi, "detected color mode");
 
     // Try to get ascii from given backend first, if it fails, try neofetch backend
-    let asc = get_distro_ascii(distro, backend).or_else(|_| {
-        get_distro_ascii(distro, Backend::Neofetch).context("failed to get distro ascii from neofetch backend")
-    })?;
+    let asc = get_distro_ascii(distro, backend).or_else(|_| get_distro_ascii(distro, Backend::Neofetch)).context("failed to get distro ascii from neofetch backend")?;
     let asc = asc.to_normalized().context("failed to normalize ascii")?;
     let theme = det_bg.map(|bg| bg.theme()).unwrap_or_default();
     let color_mode = det_ansi.unwrap_or(AnsiMode::Ansi256);
@@ -769,13 +767,11 @@ fn create_config(
     };
 
     // get distro string and convert it into the enum, neofetch friendly format, so we can check for small logos with the {distro}_small neofetch naming scheme.
-    let get_current_dst_str= get_distro_name(backend).context("failed to get current distro.")?;
-    
-    let detected_dst: Option<String> = if distro.is_none() {
-        Some(format!("{:?}", Distro::detect(get_current_dst_str).unwrap()))
-    } else {
-        Some(distro.unwrap().to_string())
-    };
+    let tmp_dst = get_distro_name(backend).or_else(|_| get_distro_name(Backend::Neofetch)).context("failed to get distro name")?;
+    let detected_dst = Some(distro.map_or_else(
+        || format!("{:?}", Distro::detect(tmp_dst).unwrap()),
+        |d| d.to_string(),
+    ));
 
     // in case someone specified {distro}_small already in the --distro arg
     let detected_dst_small_fmt = if !detected_dst.clone().unwrap().ends_with("_small") {
