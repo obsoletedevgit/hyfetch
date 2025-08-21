@@ -1,7 +1,6 @@
-use std::env;
 use std::fmt::Write as _;
-use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::{env, fs};
 
 use indexmap::IndexMap;
 use regex::Regex;
@@ -25,25 +24,14 @@ impl AsciiDistro {
 }
 
 fn main() {
-    // 1. Get workspace and OUT_DIR paths
-    let workspace_dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap());
-    let out_dir = PathBuf::from(env::var_os("OUT_DIR").unwrap());
+    let neofetch_path = Path::new(env!("CARGO_WORKSPACE_DIR")).join("neofetch");
 
-    let src_neofetch = workspace_dir.join("neofetch");
-    let src_font_logos = workspace_dir.join("hyfetch/data/font_logos.json");
-    let dst_neofetch = out_dir.join("neofetch");
-    let dst_font_logos = out_dir.join("font_logos.json");
+    println!("cargo:rerun-if-changed={}", neofetch_path.display());
 
-    // Tell Cargo to re-run if original files change
-    println!("cargo:rerun-if-changed={}", src_neofetch.display());
-    println!("cargo:rerun-if-changed={}", src_font_logos.display());
+    let out_dir = env::var_os("OUT_DIR").unwrap();
+    let out_path = Path::new(&out_dir);
 
-    // 2. Copy neofetch script and font logos to OUT_DIR
-    fs::copy(&src_neofetch, &dst_neofetch).expect("Failed to copy neofetch script to OUT_DIR");
-    fs::copy(&src_font_logos, &dst_font_logos).expect("Failed to copy font logos data to OUT_DIR");
-
-    // 3. Export distros from neofetch script
-    export_distros(&dst_neofetch, &out_dir);
+    export_distros(neofetch_path, out_path);
 }
 
 fn export_distros<P>(neofetch_path: P, out_path: &Path)

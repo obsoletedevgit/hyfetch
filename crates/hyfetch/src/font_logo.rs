@@ -6,7 +6,7 @@ use std::collections::HashMap;
 use std::fs::{self, File};
 use std::io::{Read, Write};
 
-const FONT_LOGOS: &str = include_str!(concat!(env!("OUT_DIR"), "/font_logos.json"));
+const FONT_LOGOS: &str = include_str!(concat!(env!("CARGO_WORKSPACE_DIR"), "/hyfetch/data/font_logos.json"));
 
 pub fn get_font_logo(backend: Backend) -> Result<String> {
     // Check if the cache file exists and return its contents if it does
