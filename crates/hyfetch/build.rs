@@ -30,6 +30,11 @@ fn main() {
     let dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap_or_else(|| env::var_os("CARGO_MANIFEST_DIR").unwrap()));
     let o = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     
+    // Ensure output directory exists
+    if !o.exists() {
+        fs::create_dir_all(&o).expect("Failed to create OUT_DIR");
+    }
+
     for file in &["neofetch", "hyfetch"] {
         let src = dir.join(file);
         let dst = o.join(file);

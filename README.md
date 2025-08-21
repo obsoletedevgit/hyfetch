@@ -124,7 +124,7 @@ Updates to `neowofetch` begins with the emoji 🖼️
 Note: You can install the latest nightly version by using:
 
 ```sh
-pip install git+https://github.com/hykilpikonna/hyfetch.git@master
+cargo install --git https://github.com/hykilpikonna/hyfetch
 ```
 
 <!-- CHANGELOG STARTS HERE --->
