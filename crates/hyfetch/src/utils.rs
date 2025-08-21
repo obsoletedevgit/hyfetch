@@ -16,6 +16,12 @@ pub fn get_cache_path() -> Result<PathBuf> {
         .context("failed to get base dirs")?
         .cache_dir()
         .to_owned();
+
+    // Make sure the cache directory exists
+    if !path.exists() {
+        fs::create_dir_all(&path).with_context(|| format!("failed to create cache dir {path:?}"))?;
+    }
+
     Ok(path)
 }
 

@@ -34,11 +34,6 @@ pub fn get_font_logo(backend: Backend) -> Result<String> {
 
     let logo = font_logos.get(matched_distro).unwrap();
 
-    // Create parent directories for the cache if they don't exist
-    if let Some(parent) = cache_path.parent() {
-        fs::create_dir_all(parent).context("Failed to create cache directory")?;
-    }
-
     // Write the logo to the cache file
     let mut cache_file = File::create(cache_path).context("Failed to create cache file")?;
     cache_file.write_all(logo.as_bytes()).context("Failed to write logo to cache file")?;
