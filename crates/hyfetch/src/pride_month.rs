@@ -307,11 +307,13 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
     let mut frame: Wrapping<usize> = Wrapping(0);
 
     const SPEED: u8 = 2;
-    let frame_delay = Duration::from_secs_f32(1.0 / 25.0);
+    let frame_delay = Duration::from_secs_f32(2.0 / 25.0);
 
     execute!(io::stdout(), EnterAlternateScreen).context("failed to enter alternate screen")?;
 
     loop {
+        // Move cursor to the top left corner
+        print!("\x1B[H");
         draw_frame(frame.0)?;
         frame += usize::from(SPEED);
         thread::sleep(frame_delay);

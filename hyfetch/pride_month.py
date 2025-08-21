@@ -105,8 +105,8 @@ def start_animation():
 
     try:
         while 1:
-            # Clear the screen
-            print("\033[2J\033[H", end="")
+            # Move cursor to the top left corner
+            print("\033[H", end="")
             draw_frame()
             frame += speed
             sleep(frame_delay)
