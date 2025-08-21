@@ -208,6 +208,10 @@ def detect(name: str) -> AsciiArt | None:
         from .bedrock import bedrock
         return bedrock
     
+    if name.startswith('bazzite'):
+        from .bazzite import bazzite
+        return bazzite
+    
     if name.startswith('biglinux_large'):
         from .biglinux_large import biglinux_large
         return biglinux_large
@@ -664,9 +668,9 @@ def detect(name: str) -> AsciiArt | None:
         from .interix import interix
         return interix
     
-    if name.startswith('ironclad'):
-        from .ironclad import ironclad
-        return ironclad
+    if name.startswith('gloire'):
+        from .gloire import gloire
+        return gloire
     
     if name.startswith('januslinux') or name.startswith('janus') or name.startswith('ataraxia linux') or name.startswith('ataraxia'):
         from .januslinux import januslinux
@@ -1315,6 +1319,10 @@ def detect(name: str) -> AsciiArt | None:
     if name.startswith('t2'):
         from .t2 import t2
         return t2
+    
+    if name.startswith('opensuse tumbleweed-slowroll') or name.startswith('opensuse_slowroll'):
+        from .opensuse_tumbleweed_slowroll import opensuse_tumbleweed_slowroll
+        return opensuse_tumbleweed_slowroll
     
     if name.startswith('opensuse tumbleweed') or name.startswith('opensuse_tumbleweed'):
         from .opensuse_tumbleweed import opensuse_tumbleweed
