@@ -121,3 +121,14 @@ start_moderation.sh
 gh_moderator.toml
 moderator-data
 hyfetch/git
+build
+dist
+target
+.vscode
+.idea
+*.iml
+*.egg-info
+__pycache__
+*.pyc
+*.pyo
+*.pyd
