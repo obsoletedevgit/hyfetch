@@ -113,6 +113,8 @@ pub enum Preset {
 
     Genderflux,
 
+    Nullflux,
+
     Hypergender, Hyperboy, Hypergirl, Hyperandrogyne, Hyperneutrois,
 
     Finsexual,
@@ -440,6 +442,10 @@ impl Preset {
             // sourced from https://www.deviantart.com/pride-flags/art/Genderflux-1-543925589
             Self::Genderflux => ColorProfile::from_hex_colors(vec![
                 "f47694", "f2a2b9", "cecece", "7ce0f7", "3ecdf9", "fff48d",
+            ]),
+
+            Self::Nullflux => ColorProfile::from_hex_colors(vec![
+                "#0B0C0E", "#A28DB9", "#E1D4EF", "#F0E6DD", "#665858",
             ]),
 
             Self::Hypergender => ColorProfile::from_hex_colors(vec![

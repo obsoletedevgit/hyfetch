@@ -554,6 +554,11 @@ PRESETS: dict[str, ColorProfile] = {
         "fff48d",
     ]),
     
+    # https://lgbtqia.wiki/wiki/Gendernull
+    'nullflux': ColorProfile([
+        '#0B0C0E', '#A28DB9', '#E1D4EF', '#F0E6DD', '#665858',
+    ]),
+    
     'hypergender': ColorProfile([
         "#EFEFEF", "#FFFFFF", "#FBFF75", "#000000", "#FBFF75", "#FFFFFF", "#EFEFEF",
     ]),
