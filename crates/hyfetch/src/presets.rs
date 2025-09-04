@@ -171,6 +171,8 @@ pub enum Preset {
 
     Twink,
 
+    Adipophilia,
+
     Kenochoric,
 
     Veldian,
@@ -577,6 +579,11 @@ impl Preset {
 
             // colorpicked from https://commons.wikimedia.org/wiki/File:Twink_Pride_Flag_(proposed).svg
             Self::Twink => ColorProfile::from_hex_colors(vec!["#FFB2FF", "#FFFFFF", "#FFFF81"]),
+
+            // https://en.wikipedia.org/wiki/File:FatFetishFlag.png
+            Self::Adipophilia => ColorProfile::from_hex_colors(vec![
+                "#000000", "#E16180", "#FFF9BE", "#603E41", "#000000",
+            ]),
 
             Self::Kenochoric => {
                 ColorProfile::from_hex_colors(vec!["#000000", "#2E1569", "#824DB7", "#C7A1D6"])

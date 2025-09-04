@@ -775,6 +775,9 @@ PRESETS: dict[str, ColorProfile] = {
         '#FFFFFF',
         '#FFFF81',
     ]),
+    
+    # https://en.wikipedia.org/wiki/File:FatFetishFlag.png
+    'adipophilia': ColorProfile(["#000000", "#E16180", "#FFF9BE", "#603E41", "#000000"]),
 
     'kenochoric': ColorProfile([
         '#000000',
