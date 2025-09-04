@@ -129,6 +129,8 @@ cargo install --git https://github.com/hykilpikonna/hyfetch
 
 <!-- CHANGELOG STARTS HERE --->
 
+### 2.0.2
+
 This is a small patch release that adds more flags and fixes some bugs from the recent Rust rewrite.
 
 * 🏳️‍🌈 **New Flags**: Added new pride flags for Nullflux ([#397](https://github.com/hykilpikonna/hyfetch/pull/397)), Hypergender ([#422](https://github.com/hykilpikonna/hyfetch/pull/422)), Fictosexual ([#394](https://github.com/hykilpikonna/hyfetch/pull/394)), and Adipophilia ([#424](https://github.com/hykilpikonna/hyfetch/pull/424)).
