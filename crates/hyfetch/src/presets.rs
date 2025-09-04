@@ -63,6 +63,8 @@ pub enum Preset {
 
     Aromantic,
 
+    Fictosexual,
+
     Aroace1,
 
     Aroace2,
@@ -154,8 +156,6 @@ pub enum Preset {
     Plural,
 
     Fraysexual,
-
-    Fictosexual, // https://github.com/hykilpikonna/hyfetch/issues/394
 
     Bear,
 
@@ -304,6 +304,11 @@ impl Preset {
 
             Self::Aromantic => ColorProfile::from_hex_colors(vec![
                 "#3BA740", "#A8D47A", "#FFFFFF", "#ABABAB", "#000000",
+            ]),
+
+            // https://orientation.fandom.com/wiki/Fictosexual
+            Self::Fictosexual => ColorProfile::from_hex_colors(vec![
+                "#000000", "#C4C4C4", "#A349A5", "#C4C4C4", "#000000",
             ]),
 
             // sourced from https://flag.library.lgbt/flags/aroace/
@@ -520,11 +525,6 @@ impl Preset {
             Self::Fraysexual => {
                 ColorProfile::from_hex_colors(vec!["#226CB5", "#94E7DD", "#FFFFFF", "#636363"])
             },
-
-            // https://orientation.fandom.com/wiki/Fictosexual
-            Self::Fictosexual => ColorProfile::from_hex_colors(vec![
-                "#000000", "#C4C4C4", "#A349A5", "#C4C4C4", "#000000",
-            ]),
 
             // sourced from https://commons.wikimedia.org/wiki/File:Bear_Brotherhood_flag.svg
             Self::Bear => ColorProfile::from_hex_colors(vec![
