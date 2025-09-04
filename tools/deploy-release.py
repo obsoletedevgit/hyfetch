@@ -56,7 +56,7 @@ def edit_versions(version: str):
     print('Editing Cargo.toml...')
     path = Path('Cargo.toml')
     content = path.read_text()
-    content = re.sub(r'(?<=^version = ")[^"]+(?="$)', version, content)
+    content = re.sub(r'(?<=^version = ")[^"]+(?="$)', version, content, flags=re.MULTILINE)
     path.write_text(content)
 
     # 4. README.md
@@ -132,7 +132,12 @@ def create_release(v: str):
     subprocess.check_call(['git', 'tag', f'neofetch-{NEOFETCH_NEW_VERSION}'])
 
     i = input('Please check the commit is correct. Press y to continue or any other key to cancel.')
-    assert i == 'y'
+    if i.lower() != 'y':
+        print('Aborting...')
+        subprocess.check_call(['git', 'reset', '--hard', 'HEAD~1'])
+        subprocess.check_call(['git', 'tag', '-d', v])
+        subprocess.check_call(['git', 'tag', '-d', f'neofetch-{NEOFETCH_NEW_VERSION}'])
+        exit(1)
 
     # 4. Push
     print('Pushing commits...')
