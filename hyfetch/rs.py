@@ -1,3 +1,4 @@
+import os
 import platform
 import subprocess
 import sys
@@ -12,7 +13,9 @@ def run_rust():
     pd = Path(__file__).parent.joinpath('rust')
     pd = pd.joinpath('hyfetch.exe' if platform.system() == 'Windows' else 'hyfetch')
     if not pd.exists():
-        printc('&cThe rust executable is not found, falling back to python...')
+        if 'HYFETCH_DONT_WARN_RUST' not in os.environ:
+            printc('&cThe executable for hyfetch v2 (rust) is not found, falling back to legacy v1.99.∞ (python).\n'
+                   'You can add environment variable HYFETCH_DONT_WARN_RUST=1 to suppress this warning.\n')
         run_py()
         return
 

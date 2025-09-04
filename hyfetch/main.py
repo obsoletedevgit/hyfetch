@@ -382,7 +382,7 @@ def run():
     GLOBAL_CFG.use_overlay = args.overlay
 
     if args.version:
-        print(f'Version is {VERSION}')
+        print(f'Version is 1.99.∞\n(python hyfetch legacy mode)')
         return
 
     # Ensure git bash for windows
