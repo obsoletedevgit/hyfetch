@@ -553,6 +553,22 @@ PRESETS: dict[str, ColorProfile] = {
         "3ecdf9",
         "fff48d",
     ]),
+    
+    'hypergender': ColorProfile([
+        "#EFEFEF", "#FFFFFF", "#FBFF75", "#000000", "#FBFF75", "#FFFFFF", "#EFEFEF",
+    ]),
+    'hyperboy': ColorProfile([
+        "#EFEFEF", "#FFFFFF", "#74D7FE", "#000000", "#74D7FE", "#FFFFFF", "#EFEFEF",
+    ]),
+    'hypergirl': ColorProfile([
+        "#EFEFEF", "#FFFFFF", "#FC76D3", "#000000", "#FC76D3", "#FFFFFF", "#EFEFEF",
+    ]),
+    'hyperandrogyne': ColorProfile([
+        "#EFEFEF", "#FFFFFF", "#BB83FF", "#000000", "#BB83FF", "#FFFFFF", "#EFEFEF",
+    ]),
+    'hyperneutrois': ColorProfile([
+        "#EFEFEF", "#FFFFFF", "#BAFA74", "#000000", "#BAFA74", "#FFFFFF", "#EFEFEF",
+    ]),
 
     "finsexual": ColorProfile([
         "#B18EDF",

@@ -113,6 +113,8 @@ pub enum Preset {
 
     Genderflux,
 
+    Hypergender, Hyperboy, Hypergirl, Hyperandrogyne, Hyperneutrois,
+
     Finsexual,
 
     Unlabeled1,
@@ -438,6 +440,26 @@ impl Preset {
             // sourced from https://www.deviantart.com/pride-flags/art/Genderflux-1-543925589
             Self::Genderflux => ColorProfile::from_hex_colors(vec![
                 "f47694", "f2a2b9", "cecece", "7ce0f7", "3ecdf9", "fff48d",
+            ]),
+
+            Self::Hypergender => ColorProfile::from_hex_colors(vec![
+                "#EFEFEF", "#FFFFFF", "#FBFF75", "#000000", "#FBFF75", "#FFFFFF", "#EFEFEF",
+            ]),
+
+            Self::Hyperboy => ColorProfile::from_hex_colors(vec![
+                "#EFEFEF", "#FFFFFF", "#74D7FE", "#000000", "#74D7FE", "#FFFFFF", "#EFEFEF",
+            ]),
+
+            Self::Hypergirl => ColorProfile::from_hex_colors(vec![
+                "#EFEFEF", "#FFFFFF", "#FC76D3", "#000000", "#FC76D3", "#FFFFFF", "#EFEFEF",
+            ]),
+
+            Self::Hyperandrogyne => ColorProfile::from_hex_colors(vec![
+                "#EFEFEF", "#FFFFFF", "#BB83FF", "#000000", "#BB83FF", "#FFFFFF", "#EFEFEF",
+            ]),
+
+            Self::Hyperneutrois => ColorProfile::from_hex_colors(vec![
+                "#EFEFEF", "#FFFFFF", "#BAFA74", "#000000", "#BAFA74", "#FFFFFF", "#EFEFEF",
             ]),
 
             // sourced from https://lgbtqia.wiki/wiki/Finsexual
