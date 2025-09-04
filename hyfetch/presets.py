@@ -699,6 +699,9 @@ PRESETS: dict[str, ColorProfile] = {
         '#FFFFFF',
         '#636363',
     ]),
+    
+    # https://orientation.fandom.com/wiki/Fictosexual
+    'fictosexual': ColorProfile(["#000000", "#C4C4C4", "#A349A5", "#C4C4C4", "#000000"]),
 
     # Queer Subcultures
     # sourced from https://commons.wikimedia.org/wiki/File:Bear_Brotherhood_flag.svg
