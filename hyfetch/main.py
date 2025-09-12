@@ -7,6 +7,7 @@ import importlib.util
 import json
 import random
 import traceback
+import sys
 from itertools import permutations, islice
 from math import ceil
 
@@ -18,6 +19,50 @@ from .font_logo import get_font_logo
 from .models import Config
 from .neofetch_util import *
 from .presets import PRESETS
+
+
+def read_key():
+    """
+    Read a key from stdin, handling arrow keys and other special keys.
+    Returns 'left', 'right', 'up', 'down', 'enter', 'backspace', or a character.
+    """
+    if IS_WINDOWS:
+        import msvcrt
+        ch = msvcrt.getch()
+        if ch == b'\r':
+            return 'enter'
+        if ch == b'\x08':
+            return 'backspace'
+        if ch in b'\x00\xe0':  # Special key
+            ch2 = msvcrt.getch()
+            if ch == b'\xe0':
+                if ch2 == b'H': return 'up'
+                if ch2 == b'P': return 'down'
+                if ch2 == b'K': return 'left'
+                if ch2 == b'M': return 'right'
+        try:
+            return ch.decode('utf-8')
+        except UnicodeDecodeError:
+            return None  # Ignore undecodable characters
+    else:  # Unix
+        import tty, termios, select
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(sys.stdin.fileno())
+            # Check for input with a timeout to handle escape sequences
+            if select.select([sys.stdin], [], [], 0.01)[0]:
+                ch = sys.stdin.read(1)
+                if ch == '\x1b':  # ESC sequence
+                    if sys.stdin.read(1) == '[':
+                        arrow = sys.stdin.read(1)
+                        if arrow == 'D': return 'left'
+                        if arrow == 'C': return 'right'
+                elif ch in ('\r', '\n'): return 'enter'
+                elif ch == '\x7f': return 'backspace'
+                return ch
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
 
 
 def check_config(path) -> Config:
@@ -162,26 +207,61 @@ def create_config() -> Config:
         print()
 
     page = 0
-    while True:
+    _prs = None
+    while not _prs:
         print_flag_page(pages[page], page)
 
         tmp = PRESETS['rainbow'].set_light_dl_def(light_dark).color_text('preset')
-        opts = []
-        if page < num_pages - 1:
-            opts.extend(['next', 'n'])
-        if page > 0:
-            opts.extend(['prev', 'p'])
-        opts.extend(list(PRESETS.keys()))
-        print("Enter 'next' or 'n' to go to the next page and 'prev' or 'p' to go to the previous page.")
-        preset = literal_input(f'Which {tmp} do you want to use? ', opts, 'rainbow', show_ops=False)
-        if preset == 'next' or preset == 'n':
-            page += 1
-        elif preset == 'prev' or preset == 'p':
-            page -= 1
-        else:
-            _prs = PRESETS[preset]
-            update_title('Selected flag', _prs.set_light_dl_def(light_dark).color_text(preset))
-            break
+        print("Use arrow keys (←/→) for pagination, or type '[p]rev'/'[n]ext'.")
+        print("Type a flag name and press Enter to select.")
+        printc(f'Which {tmp} do you want to use? (default: rainbow)')
+
+        # Custom input loop
+        buffer = ""
+        prompt = '> '
+        sys.stdout.write(prompt)
+        sys.stdout.flush()
+
+        while True:
+            key = read_key()
+
+            if key == 'left' and page > 0:
+                page -= 1
+                break
+            elif key == 'right' and page < num_pages - 1:
+                page += 1
+                break
+            elif key == 'enter':
+                sys.stdout.write('\n')
+                selection = buffer.lower().strip() or 'rainbow'
+
+                # Find selection logic from literal_input
+                options = list(PRESETS.keys())
+                lows = [o.lower() for o in options]
+
+                # Exact match
+                if selection in lows:
+                    preset = options[lows.index(selection)]
+                    _prs = PRESETS[preset]
+                    update_title('Selected flag', _prs.set_light_dl_def(light_dark).color_text(preset))
+                    break
+
+                # Handle next/prev
+                if selection in ('n', 'next') and page < num_pages - 1: page += 1; break
+                if selection in ('p', 'prev') and page > 0: page -= 1; break
+
+                # Invalid input
+                printc(f'&cInvalid selection! "{selection}" is not a valid flag name.')
+                buffer = ""
+                sys.stdout.write(prompt)
+                sys.stdout.flush()
+
+            elif key == 'backspace' and buffer:
+                buffer = buffer[:-1]
+                sys.stdout.write('\b \b'); sys.stdout.flush()
+            elif key and len(key) == 1 and key.isprintable():
+                buffer += key
+                sys.stdout.write(key); sys.stdout.flush()
 
     #############################
     # 4. Dim/lighten colors
