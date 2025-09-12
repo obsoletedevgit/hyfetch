@@ -166,16 +166,17 @@ def create_config() -> Config:
         print_flag_page(pages[page], page)
 
         tmp = PRESETS['rainbow'].set_light_dl_def(light_dark).color_text('preset')
-        opts = list(PRESETS.keys())
+        opts = []
         if page < num_pages - 1:
-            opts.append('next')
+            opts.extend(['next', 'n'])
         if page > 0:
-            opts.append('prev')
-        print("Enter 'next' to go to the next page and 'prev' to go to the previous page.")
+            opts.extend(['prev', 'p'])
+        opts.extend(list(PRESETS.keys()))
+        print("Enter 'next' or 'n' to go to the next page and 'prev' or 'p' to go to the previous page.")
         preset = literal_input(f'Which {tmp} do you want to use? ', opts, 'rainbow', show_ops=False)
-        if preset == 'next':
+        if preset == 'next' or preset == 'n':
             page += 1
-        elif preset == 'prev':
+        elif preset == 'prev' or preset == 'p':
             page -= 1
         else:
             _prs = PRESETS[preset]

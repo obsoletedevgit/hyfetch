@@ -563,12 +563,13 @@ fn create_config(
     loop {
         print_flag_page(&pages[usize::from(page)], page).context("failed to print flag page")?;
 
-        let mut opts: Vec<&str> = <Preset as VariantNames>::VARIANTS.into();
+        let mut opts: Vec<&str> = Vec::new();
         opts.extend(["next", "n", "prev", "p"]);
+        opts.extend(<Preset as VariantNames>::VARIANTS);
 
         writeln!(
             io::stdout(),
-            "Enter '[n]ext' to go to the next page and '[p]rev' to go to the previous page."
+            "Enter 'next' or 'n' to go to the next page and 'prev' or 'p' to go to the previous page."
         )
         .context("failed to write message to stdout")?;
         let selection = literal_input(
