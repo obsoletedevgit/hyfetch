@@ -37,6 +37,7 @@ use serde_json::ser::PrettyFormatter;
 use strum::{EnumCount as _, VariantArray, VariantNames};
 use terminal_colorsaurus::{background_color, QueryOptions};
 use terminal_size::{terminal_size, Height, Width};
+use crossterm::event::{self, Event, KeyCode, KeyEventKind};
 use time::{Month, OffsetDateTime};
 use tracing::debug;
 
@@ -199,6 +200,49 @@ fn load_config(path: &PathBuf) -> Result<Option<Config>> {
     debug!(?config, "loaded config");
 
     Ok(Some(config))
+}
+
+enum Key {
+    Left,
+    Right,
+    Enter,
+    Backspace,
+    Char(char),
+    Other,
+}
+
+/// Read a key from stdin, handling arrow keys and other special keys.
+fn read_key() -> Result<Key> {
+    let _guard = RawModeGuard::new()?;
+    loop {
+        if let Event::Key(key_event) = event::read()? {
+            if key_event.kind == KeyEventKind::Press {
+                return Ok(match key_event.code {
+                    KeyCode::Left => Key::Left,
+                    KeyCode::Right => Key::Right,
+                    KeyCode::Enter => Key::Enter,
+                    KeyCode::Backspace => Key::Backspace,
+                    KeyCode::Char(c) => Key::Char(c),
+                    _ => Key::Other,
+                });
+            }
+        }
+    }
+}
+
+struct RawModeGuard;
+
+impl RawModeGuard {
+    fn new() -> Result<Self> {
+        crossterm::terminal::enable_raw_mode()?;
+        Ok(Self)
+    }
+}
+
+impl Drop for RawModeGuard {
+    fn drop(&mut self) {
+        let _ = crossterm::terminal::disable_raw_mode();
+    }
 }
 
 fn det_bg() -> Result<Option<Srgb<u8>>, terminal_colorsaurus::Error> {
@@ -559,54 +603,92 @@ fn create_config(
     let preset: Preset;
     let color_profile;
 
-    let mut page: u8 = 0;
-    loop {
+    let mut page: u8 = 0;    
+    'outer: loop {
         print_flag_page(&pages[usize::from(page)], page).context("failed to print flag page")?;
-
-        let mut opts: Vec<&str> = Vec::new();
-        opts.extend(["next", "n", "prev", "p"]);
-        opts.extend(<Preset as VariantNames>::VARIANTS);
 
         writeln!(
             io::stdout(),
-            "Enter 'next' or 'n' to go to the next page and 'prev' or 'p' to go to the previous page."
+            "Use arrow keys (←/→) for pagination, or type '[p]rev'/'[n]ext'."
         )
         .context("failed to write message to stdout")?;
-        let selection = literal_input(
+        writeln!(io::stdout(), "Type a flag name and press Enter to select.")
+            .context("failed to write message to stdout")?;
+        printc(
             format!(
-                "Which {preset} do you want to use? ",
+                "Which {preset} do you want to use? (default: rainbow)",
                 preset = preset_default_colored
             ),
-            &opts[..],
-            Preset::Rainbow.as_ref(),
-            false,
             color_mode,
-        )
-        .context("failed to ask for choice input")
-        .context("failed to select preset")?;
-        if selection == "next" || selection == "n" {
-            page = (page + 1) % num_pages;
-        } else if selection == "prev" || selection == "p" {
-            page = (page + num_pages - 1) % num_pages;
-        } else {
-            preset = selection.parse().expect("selected preset should be valid");
-            debug!(?preset, "selected preset");
-            color_profile = preset.color_profile();
-            update_title(
-                &mut title,
-                &mut option_counter,
-                "Selected flag",
-                &color_profile
-                    .with_lightness_adaptive(default_lightness, theme)
-                    .color_text(
-                        preset.as_ref(),
-                        color_mode,
-                        ForegroundBackground::Foreground,
-                        false,
-                    )
-                    .expect("coloring text with selected preset should not fail"),
-            );
-            break;
+        )?;
+
+        // Custom input loop
+        let mut buffer = String::new();
+        let prompt = "> ";
+        write!(io::stdout(), "{prompt}")?;
+        io::stdout().flush()?;
+
+        loop {
+            let key = read_key()?;
+
+            match key {
+                Key::Left if page > 0 => {
+                    page -= 1;
+                    continue 'outer;
+                }
+                Key::Right if page < num_pages - 1 => {
+                    page += 1;
+                    continue 'outer;
+                }
+                Key::Enter => {
+                    writeln!(io::stdout())?;
+                    let selection = buffer.trim().to_lowercase();
+                    let selection_str = if selection.is_empty() { "rainbow" } else { &selection };
+
+                    let options = <Preset as VariantNames>::VARIANTS;
+                    let lows: Vec<String> = options.iter().map(|o| o.to_lowercase()).collect();
+
+                    if let Some(idx) = lows.iter().position(|o| o == selection_str) {
+                        preset = options[idx].parse().expect("selected preset should be valid");
+                        debug!(?preset, "selected preset");
+                        color_profile = preset.color_profile();
+                        update_title(
+                            &mut title,
+                            &mut option_counter,
+                            "Selected flag",
+                            &color_profile
+                                .with_lightness_adaptive(default_lightness, theme)
+                                .color_text(
+                                    preset.as_ref(),
+                                    color_mode,
+                                    ForegroundBackground::Foreground,
+                                    false,
+                                )
+                                .expect("coloring text with selected preset should not fail"),
+                        );
+                        break 'outer;
+                    }
+
+                    if (selection_str == "n" || selection_str == "next") && page < num_pages - 1 { page += 1; continue 'outer; }
+                    if (selection_str == "p" || selection_str == "prev") && page > 0 { page -= 1; continue 'outer; }
+
+                    printc(format!("&cInvalid selection! \"{selection_str}\" is not a valid flag name."), color_mode)?;
+                    buffer.clear();
+                    write!(io::stdout(), "{prompt}")?;
+                    io::stdout().flush()?;
+                }
+                Key::Backspace if !buffer.is_empty() => {
+                    buffer.pop();
+                    write!(io::stdout(), "\x08 \x08")?; // Backspace, space, backspace
+                    io::stdout().flush()?;
+                }
+                Key::Char(c) if c.is_ascii_graphic() || c == ' ' => {
+                    buffer.push(c);
+                    write!(io::stdout(), "{c}")?;
+                    io::stdout().flush()?;
+                }
+                _ => {}
+            }
         }
     }
 
