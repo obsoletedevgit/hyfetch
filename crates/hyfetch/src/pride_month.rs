@@ -47,58 +47,32 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
     };
 
     let text = &TEXT_ASCII[1..TEXT_ASCII.len().checked_sub(1).unwrap()];
-    let (text_width, text_height) =
-        ascii_size(text).expect("text ascii should have valid width and height");
+    let (text_w, text_h) = ascii_size(text)?;
     let (text, text_width, text_height) = {
         const TEXT_BORDER_WIDTH: u16 = 2;
         const NOTICE_BORDER_WIDTH: u16 = 1;
         const VERTICAL_MARGIN: u16 = 1;
-        let notice_w = NOTICE.len();
-        let notice_w: u8 = notice_w
-            .try_into()
-            .expect("`NOTICE` width should fit in `u8`");
-        let notice_h = NOTICE.lines().count();
-        let notice_h: u8 = notice_h
-            .try_into()
-            .expect("`NOTICE` height should fit in `u8`");
+        let notice_w: u16 = NOTICE.len().try_into()?;
+        let notice_h: u16 = NOTICE.lines().count().try_into()?;
         let term_w_min = cmp::max(
-            u16::from(text_width)
-                .checked_add(TEXT_BORDER_WIDTH.checked_mul(2).unwrap())
-                .unwrap(),
-            u16::from(notice_w)
-                .checked_add(NOTICE_BORDER_WIDTH.checked_mul(2).unwrap())
-                .unwrap(),
+            text_w + TEXT_BORDER_WIDTH * 2,
+            notice_w + NOTICE_BORDER_WIDTH * 2,
         );
-        let term_h_min = u16::from(text_height)
-            .checked_add(notice_h.into())
-            .unwrap()
-            .checked_add(VERTICAL_MARGIN.checked_mul(2).unwrap())
-            .unwrap();
+        let term_h_min = u16::from(text_h) + notice_h + VERTICAL_MARGIN * 2;
         if w.get() >= term_w_min && h.get() >= term_h_min {
-            (text, text_width, text_height)
+            (text, text_w, text_h)
         } else {
             let text = &TEXT_ASCII_SMALL[1..TEXT_ASCII_SMALL.len().checked_sub(1).unwrap()];
-            let (text_width, text_height) =
-                ascii_size(text).expect("text ascii should have valid width and height");
+            let (text_w, text_h) = ascii_size(text)?;
             let term_w_min = cmp::max(
-                u16::from(text_width)
-                    .checked_add(TEXT_BORDER_WIDTH.checked_mul(2).unwrap())
-                    .unwrap(),
-                u16::from(notice_w)
-                    .checked_add(NOTICE_BORDER_WIDTH.checked_mul(2).unwrap())
-                    .unwrap(),
+                text_w + TEXT_BORDER_WIDTH * 2,
+                notice_w + NOTICE_BORDER_WIDTH * 2,
             );
-            let term_h_min = u16::from(text_height)
-                .checked_add(notice_h.into())
-                .unwrap()
-                .checked_add(VERTICAL_MARGIN.checked_mul(2).unwrap())
-                .unwrap();
+            let term_h_min = text_h + notice_h + VERTICAL_MARGIN * 2;
             if w.get() < term_w_min || h.get() < term_h_min {
-                return Err(anyhow!(
-                    "terminal size should be at least ({term_w_min} * {term_h_min})"
-                ));
+                return Err(anyhow!("terminal size should be at least ({term_w_min} * {term_h_min})"));
             }
-            (text, text_width, text_height)
+            (text, text_w, text_h)
         }
     };
     let text_lines: Vec<&str> = text.lines().collect();
@@ -175,27 +149,11 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
                     .wrapping_add_signed((2.0 * (y as f64 + 0.5 * frame as f64).sin()) as isize);
                 let y_text = text_start_y <= y && y < text_end_y;
 
-                let border = 1u16
-                    .checked_add(
-                        if y == text_start_y || y == text_end_y.checked_sub(1).unwrap() {
-                            0
-                        } else {
-                            1
-                        },
-                    )
-                    .unwrap();
-                let text_bounds_x1 = text_start_x
-                    .checked_sub(border)
-                    .expect("`text_start_x - border` should not underflow `u16`");
-                let text_bounds_x2 = text_end_x
-                    .checked_add(border)
-                    .expect("`text_end_x + border` should not overflow `u16`");
-                let notice_bounds_x1 = notice_start_x
-                    .checked_sub(1)
-                    .expect("`notice_start_x - 1` should not underflow `u16`");
-                let notice_bounds_x2 = notice_end_x
-                    .checked_add(1)
-                    .expect("`notice_end_x + 1` should not overflow `u16`");
+                let border = 1u16 + if y == text_start_y || y == (text_end_y - 1) { 0 } else { 1 };
+                let text_bounds_x1 = text_start_x - border;
+                let text_bounds_x2 = text_end_x - border;
+                let notice_bounds_x1 = notice_start_x - 1;
+                let notice_bounds_x2 = notice_end_x - 1;
 
                 // If it's a switching point
                 if idx.rem_euclid(NonZeroUsize::from(block_width).get()) == 0

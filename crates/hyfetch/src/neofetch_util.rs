@@ -281,7 +281,7 @@ pub fn run(asc: RecoloredAsciiArt, backend: Backend, args: Option<&Vec<String>>)
 }
 
 /// Gets distro ascii width and height, ignoring color code.
-pub fn ascii_size<S>(asc: S) -> Result<(u8, u8)>
+pub fn ascii_size<S>(asc: S) -> Result<(u16, u16)>
 where
     S: AsRef<str>,
 {
@@ -303,25 +303,11 @@ where
         return Ok((0, 0));
     }
 
-    let width = asc
-        .lines()
-        .map(|line| line.graphemes(true).count())
-        .max()
+    let width = asc.lines()
+        .map(|line| line.graphemes(true).count()).max()
         .expect("line iterator should not be empty");
-    let width: u8 = width.try_into().with_context(|| {
-        format!(
-            "`asc` should not have more than {limit} characters per line",
-            limit = u8::MAX
-        )
-    })?;
-    let height = asc.lines().count();
-    let height: u8 = height.try_into().with_context(|| {
-        format!(
-            "`asc` should not have more than {limit} lines",
-            limit = u8::MAX
-        )
-    })?;
-
+    let width: u16 = width.try_into().context("ascii art width should fit in u16")?;
+    let height: u16 = asc.lines().count().try_into().context("ascii art height should fit in u16")?;
     Ok((width, height))
 }
 

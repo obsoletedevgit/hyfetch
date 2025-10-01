@@ -61,8 +61,8 @@ impl RawAsciiArt {
 
         Ok(NormalizedAsciiArt {
             lines,
-            w,
-            h,
+            w: w.try_into().context("width does not fit in u8")?,
+            h: h.try_into().context("height does not fit in u8")?,
             fg: self.fg.clone(),
         })
     }
