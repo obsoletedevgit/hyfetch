@@ -34,7 +34,7 @@ fn main() {
     let dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap_or_else(|| env::var_os("CARGO_MANIFEST_DIR").unwrap()));
     let o = PathBuf::from(env::var_os("OUT_DIR").unwrap());
 
-    for file in &["neofetch", "hyfetch"] {
+    for file in &["neofetch", "hyfetch/data"] {
         let src = anything_that_exist(&[
             &dir.join(file),
             &dir.join("../../").join(file),
@@ -45,6 +45,7 @@ fn main() {
         // Copy either file or directory
         if src.is_dir() {
             let opt = CopyOptions { overwrite: true, copy_inside: true, ..CopyOptions::default() };
+            println!("copying {} to {}", src.display(), dst.display());
             fs_extra::dir::copy(&src, &dst, &opt).expect("Failed to copy directory to OUT_DIR");
         }
         else { fs::copy(&src, &dst).expect("Failed to copy file to OUT_DIR"); }
