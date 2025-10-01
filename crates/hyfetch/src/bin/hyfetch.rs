@@ -249,9 +249,9 @@ fn det_bg() -> Result<Option<Srgb<u8>>, terminal_colorsaurus::Error> {
     }
 
     background_color(QueryOptions::default())
-        .map(|terminal_colorsaurus::Color { r, g, b }| Some(Srgb::new(r, g, b).into_format()))
+        .map(|terminal_colorsaurus::Color { r, g, b , .. }| Some(Srgb::new(r, g, b).into_format()))
         .or_else(|err| {
-            if matches!(err, terminal_colorsaurus::Error::UnsupportedTerminal) {
+            if matches!(err, terminal_colorsaurus::Error::UnsupportedTerminal(_)) {
                 Ok(None)
             } else {
                 Err(err)
