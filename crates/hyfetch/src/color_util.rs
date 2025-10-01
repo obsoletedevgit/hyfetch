@@ -403,6 +403,13 @@ where
     Ok(dst)
 }
 
+#[macro_export]
+macro_rules! printc {
+    ($($arg:tt)*) => {
+        println!("{}", color(format!("{}&r", format!($($arg)*)), AnsiMode::Rgb).expect("failed to color message"));
+    };
+}
+
 /// Prints with color.
 pub fn printc<S>(msg: S, mode: AnsiMode) -> Result<()>
 where

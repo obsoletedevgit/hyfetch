@@ -26,7 +26,7 @@ use hyfetch::models::Config;
 use hyfetch::neofetch_util::macchina_path;
 use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, get_distro_name, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
 use hyfetch::presets::{AssignLightness, ColorProfile, Preset};
-use hyfetch::pride_month;
+use hyfetch::{pride_month, printc};
 use hyfetch::types::{AnsiMode, Backend, TerminalTheme};
 use hyfetch::utils::{get_cache_path, input};
 use hyfetch::font_logo::get_font_logo;
@@ -383,18 +383,14 @@ fn create_config(
             (t - a) * ((d - c) / (b - a)) + c
         }
 
-        {
-            let label = format!(
-                "{label:^term_w$}",
-                label = "8bit Color Testing",
-                term_w = usize::from(term_w)
-            );
+        let print_color_testing = |label: &str, mode: AnsiMode| {
+            let label = format!("{label:^term_w$}", term_w = usize::from(term_w));
             let line = zip(gradient.iter(), label.chars()).fold(
                 String::new(),
                 |mut s, (&rgb_f32_color, t)| {
                     let rgb_u8_color = Srgb::<u8>::from_linear(rgb_f32_color);
                     let back = rgb_u8_color
-                        .to_ansi_string(AnsiMode::Ansi256, ForegroundBackground::Background);
+                        .to_ansi_string(mode, ForegroundBackground::Background);
                     let fore = rgb_u8_color
                         .contrast_grayscale()
                         .to_ansi_string(AnsiMode::Ansi256, ForegroundBackground::Foreground);
@@ -402,29 +398,11 @@ fn create_config(
                     s
                 },
             );
-            printc(line, AnsiMode::Ansi256).context("failed to print 8-bit color test line")?;
-        }
-        {
-            let label = format!(
-                "{label:^term_w$}",
-                label = "RGB Color Testing",
-                term_w = usize::from(term_w)
-            );
-            let line = zip(gradient.iter(), label.chars()).fold(
-                String::new(),
-                |mut s, (&rgb_f32_color, t)| {
-                    let rgb_u8_color = Srgb::<u8>::from_linear(rgb_f32_color);
-                    let back = rgb_u8_color
-                        .to_ansi_string(AnsiMode::Rgb, ForegroundBackground::Background);
-                    let fore = rgb_u8_color
-                        .contrast_grayscale()
-                        .to_ansi_string(AnsiMode::Ansi256, ForegroundBackground::Foreground);
-                    write!(s, "{back}{fore}{t}").unwrap();
-                    s
-                },
-            );
-            printc(line, AnsiMode::Rgb).context("failed to print RGB color test line")?;
-        }
+            printc!("{line}");
+        };
+
+        print_color_testing("8bit Color Testing", AnsiMode::Ansi256);
+        print_color_testing("RGB Color Testing", AnsiMode::Rgb);
 
         println!();
         print_title_prompt(
@@ -729,11 +707,7 @@ fn create_config(
                 },
                 Err(err) => {
                     debug!(%err, "could not parse lightness");
-                    printc(
-                        "&cUnable to parse lightness value, please enter a lightness value such \
-                         as 45%, .45, or 45",
-                        color_mode,
-                    )?;
+                    printc!("&cUnable to parse lightness value, please enter a lightness value such as 45%, .45, or 45");
                 },
             }
         }
@@ -1037,34 +1011,20 @@ fn create_config(
 
         // Check if macchina is installed
         #[cfg(feature = "macchina")]
-        let macchina_path = macchina_path().context("failed to get macchina path")?;
+        let macchina_path = macchina_path().unwrap_or(None);
 
-        printc(
-            "- &bneofetch&r: Written in bash, &nbest compatibility&r on Unix systems",
-            color_mode,
-        )
-        .context("failed to print message")?;
-        printc(
-            format!(
-                "- &bfastfetch&r: Written in C, &nbest performance&r {installed_not_installed}",
-                installed_not_installed = fastfetch_path
-                    .map(|path| format!("&a(Installed at {path})", path = path.display()))
-                    .unwrap_or_else(|| "&c(Not installed)".to_owned())
-            ),
-            color_mode,
-        )
-        .context("failed to print message")?;
+        printc!("- &bneofetch&r: Written in bash, &nbest compatibility&r on Unix systems");
+        printc!("- &bfastfetch&r: Written in C, &nbest performance&r {}",
+            fastfetch_path
+            .map(|path| format!("&a(Installed at {path})", path = path.display()))
+            .unwrap_or_else(|| "&c(Not installed)".to_owned())
+        );
         #[cfg(feature = "macchina")]
-        printc(
-            format!(
-                "- &bmacchina&r: Written in Rust, &nbest performance&r {installed_not_installed}\n",
-                installed_not_installed = macchina_path
-                    .map(|path| format!("&a(Installed at {path})", path = path.display()))
-                    .unwrap_or_else(|| "&c(Not installed)".to_owned())
-            ),
-            color_mode,
-        )
-        .context("failed to print message")?;
+        printc!("- &bmacchina&r: Written in Rust, &nbest performance&r {}\n",
+            macchina_path
+            .map(|path| format!("&a(Installed at {path})", path = path.display()))
+            .unwrap_or_else(|| "&c(Not installed)".to_owned())
+        );
 
         let choice = literal_input(
             "Your choice?",
@@ -1106,13 +1066,13 @@ fn create_config(
                 .to_owned();
 
             if path_input.is_empty() {
-                printc("&cNo path entered. Skipping custom ASCII file.", color_mode).context("failed to print message")?;
+                printc!("&cNo path entered. Skipping custom ASCII file.");
                 break;
             }
 
             let custom_path = PathBuf::from(&path_input);
             if !custom_path.is_file() {
-                printc(format!("&cError: File not found at {path_input}"), color_mode).context("failed to print message")?;
+                printc!("&cError: File not found at {path_input}");
                 let try_again = literal_input("Try again?", &["y", "n"], "y", true, color_mode).context("failed to ask for choice input")?;
                 if try_again == "n" {
                     break;
@@ -1121,7 +1081,7 @@ fn create_config(
             }
 
             if custom_path.extension().map_or(true, |ext| ext != "txt") {
-                printc(format!("&cError: File must have a .txt extension. Found {:?}", custom_path.extension()), color_mode).context("failed to print message")?;
+                printc!("&cError: File must have a .txt extension. Found {:?}", custom_path.extension());
                 let try_again = literal_input("Try again?", &["y", "n"], "y", true, color_mode).context("failed to ask for choice input")?;
                 if try_again == "n" {
                     break;
