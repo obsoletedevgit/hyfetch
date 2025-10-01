@@ -65,14 +65,12 @@ fn main() -> Result<()> {
     });
 
     if options.test_print {
-        let asc = get_distro_ascii(distro, backend).context("failed to get distro ascii")?;
-        println!("{asc}", asc = asc.asc);
+        println!("{asc}", asc = get_distro_ascii(distro, backend)?.asc);
         return Ok(());
     }
 
     if options.print_font_logo {
-        let logo = get_font_logo(backend).context("failed to get font logo")?;
-        println!("{logo}");
+        println!("{}", get_font_logo(backend)?);
         return Ok(());
     }
 
@@ -311,13 +309,8 @@ fn create_config(
             .expect("`option_counter` should not overflow `u8`");
     }
 
-    fn print_title_prompt(
-        option_counter: NonZeroU8,
-        prompt: &str,
-        color_mode: AnsiMode,
-    ) -> Result<()> {
-        printc(format!("&a{option_counter}. {prompt}"), color_mode)
-            .context("failed to print prompt")
+    fn print_title_prompt(option_counter: NonZeroU8, prompt: &str) {
+        printc!("&a{option_counter}. {prompt}");
     }
 
     //////////////////////////////
@@ -327,14 +320,8 @@ fn create_config(
         let (Width(term_w), Height(term_h)) = terminal_size().context("failed to get terminal size")?;
         let (term_w_min, term_h_min) = ((asc.w as u32 * 2 + 4).clamp(0, u16::MAX.into()) as u16, 30);
         if term_w < term_w_min || term_h < term_h_min {
-            printc(
-                format!(
-                    "&cWarning: Your terminal is too small ({term_w} * {term_h}).\nPlease resize \
-                     it to at least ({term_w_min} * {term_h_min}) for better experience."
-                ),
-                color_mode,
-            )
-            .context("failed to print message")?;
+            printc!("&cWarning: Your terminal is too small ({term_w} * {term_h}).\n\
+                     Please resize it to at least ({term_w_min} * {term_h_min}) for better experience.");
             input(Some("Press enter to continue...")).context("failed to read input")?;
         }
     }
@@ -401,11 +388,7 @@ fn create_config(
         print_color_testing("RGB Color Testing", AnsiMode::Rgb);
 
         println!();
-        print_title_prompt(
-            option_counter,
-            "Which &bcolor system &ado you want to use?",
-            color_mode,
-        )?;
+        print_title_prompt(option_counter, "Which &bcolor system &ado you want to use?");
         println!("(If you can't see colors under \"RGB Color Testing\", please choose 8bit)\n");
 
         let choice = literal_input(
@@ -439,12 +422,7 @@ fn create_config(
 
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
 
-        print_title_prompt(
-            option_counter,
-            "Is your terminal in &blight mode&~ or &4dark mode&~?",
-            color_mode,
-        )
-        .context("failed to print title prompt")?;
+        print_title_prompt(option_counter, "Is your terminal in &blight mode&~ or &4dark mode&~?");
         let choice = literal_input(
             "",
             TerminalTheme::VARIANTS,
@@ -523,8 +501,7 @@ fn create_config(
 
     let print_flag_page = |page, page_num: u8| -> Result<()> {
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
-        print_title_prompt(option_counter, "Let's choose a flag!", color_mode)
-            .context("failed to print title prompt")?;
+        print_title_prompt(option_counter, "Let's choose a flag!");
         println!("Available flag presets:\nPage: {page_num} of {num_pages}\n", page_num = page_num + 1);
         for &row in page {
             print_flag_row(row, color_mode).context("failed to print flag row")?;
@@ -617,12 +594,7 @@ fn create_config(
 
     let select_lightness = || -> Result<Lightness> {
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
-        print_title_prompt(
-            option_counter,
-            "Let's adjust the color brightness!",
-            color_mode,
-        )
-        .context("failed to print title prompt")?;
+        print_title_prompt(option_counter, "Let's adjust the color brightness!");
         println!(
             "The colors might be a little bit too {bright_dark} for {light_dark} mode.\n",
             bright_dark = match theme {
@@ -831,12 +803,7 @@ fn create_config(
                 println!();
             }
 
-            print_title_prompt(
-                option_counter,
-                "Do you want the default logo, or the small logo?",
-                color_mode,
-            )
-            .context("failed to print title prompt")?;
+            print_title_prompt(option_counter, "Do you want the default logo, or the small logo?");
             let opts: Vec<Cow<str>> = ["default", "small"].map(Into::into).into();
             let choice = literal_input("Your choice?", &opts[..], "default", true, color_mode)
                 .context("failed to ask for choice input")
@@ -954,12 +921,7 @@ fn create_config(
             println!();
         }
 
-        print_title_prompt(
-            option_counter,
-            "Let's choose a color arrangement!",
-            color_mode,
-        )
-        .context("failed to print title prompt")?;
+        print_title_prompt(option_counter, "Let's choose a color arrangement!");
         println!("You can choose standard horizontal or vertical alignment, or use one of the random color schemes.\nYou can type \"roll\" to randomize again.\n");
         let mut opts: Vec<Cow<str>> = ["horizontal", "vertical", "roll"].map(Into::into).into();
         opts.extend((0..random_count).map(|i| format!("random{i}").into()));
@@ -999,8 +961,7 @@ fn create_config(
 
     let select_backend = || -> Result<Backend> {
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
-        print_title_prompt(option_counter, "Select a *fetch backend", color_mode)
-            .context("failed to print title prompt")?;
+        print_title_prompt(option_counter, "Select a *fetch backend");
 
         // Check if fastfetch is installed
         let fastfetch_path = fastfetch_path().ok();
