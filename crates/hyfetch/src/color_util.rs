@@ -408,13 +408,8 @@ pub fn printc<S>(msg: S, mode: AnsiMode) -> Result<()>
 where
     S: AsRef<str>,
 {
-    writeln!(
-        io::stdout(),
-        "{msg}",
-        msg = color(format!("{msg}&r", msg = msg.as_ref()), mode)
-            .context("failed to color message")?
-    )
-    .context("failed to write message to stdout")
+    println!("{msg}", msg = color(format!("{msg}&r", msg = msg.as_ref()), mode).context("failed to color message")?);
+    Ok(())
 }
 
 /// Clears screen using ANSI escape codes.

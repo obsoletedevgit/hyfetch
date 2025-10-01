@@ -165,8 +165,7 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
                     .rem_euclid(colors.len())]
                 .to_ansi_string(color_mode, ForegroundBackground::Background),
                 fg = fg.to_ansi_string(color_mode, ForegroundBackground::Foreground)
-            )
-            .unwrap();
+            )?;
 
             // Loop over the width
             for x in 0..w.get() {
@@ -215,19 +214,9 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
                     {
                         let c: LinSrgba = c.with_alpha(1.0).into_linear();
                         let c = Srgb::<u8>::from_linear(c.overlay(black).without_alpha());
-                        write!(
-                            buf,
-                            "{bg}",
-                            bg = c.to_ansi_string(color_mode, ForegroundBackground::Background),
-                        )
-                        .unwrap();
+                        write!(buf, "{bg}", bg = c.to_ansi_string(color_mode, ForegroundBackground::Background))?;
                     } else {
-                        write!(
-                            buf,
-                            "{bg}",
-                            bg = c.to_ansi_string(color_mode, ForegroundBackground::Background),
-                        )
-                        .unwrap();
+                        write!(buf, "{bg}", bg = c.to_ansi_string(color_mode, ForegroundBackground::Background))?;
                     }
                 }
 
@@ -240,8 +229,7 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
                             .chars()
                             .nth(usize::from(x.checked_sub(text_start_x).unwrap()))
                             .unwrap(),
-                    )
-                    .unwrap();
+                    )?;
                 } else if y == notice_y && notice_start_x <= x && x < notice_end_x {
                     write!(
                         buf,
@@ -250,21 +238,15 @@ pub fn start_animation(color_mode: AnsiMode) -> Result<()> {
                             .chars()
                             .nth(usize::from(x.checked_sub(notice_start_x).unwrap()))
                             .unwrap(),
-                    )
-                    .unwrap();
+                    )?;
                 } else {
-                    write!(buf, " ").unwrap();
+                    write!(buf, " ")?;
                 }
             }
 
             // New line if it isn't the last line
             if y != h.get().checked_sub(1).unwrap() {
-                writeln!(
-                    buf,
-                    "{reset}",
-                    reset = color("&r", color_mode).expect("reset should be valid"),
-                )
-                .unwrap();
+                writeln!(buf, "{reset}", reset = color("&r", color_mode)?)?;
             }
         }
 

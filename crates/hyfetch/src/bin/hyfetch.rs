@@ -2,7 +2,7 @@ use std::borrow::Cow;
 use std::cmp;
 use std::fmt::Write as _;
 use std::fs::{self, File};
-use std::io::{self, IsTerminal as _, Read as _, Write as _};
+use std::io::{self, IsTerminal as _, Read as _};
 use std::iter;
 use std::iter::zip;
 use std::num::NonZeroU8;
@@ -66,14 +66,13 @@ fn main() -> Result<()> {
 
     if options.test_print {
         let asc = get_distro_ascii(distro, backend).context("failed to get distro ascii")?;
-        writeln!(io::stdout(), "{asc}", asc = asc.asc)
-            .context("failed to write ascii to stdout")?;
+        println!("{asc}", asc = asc.asc);
         return Ok(());
     }
 
     if options.print_font_logo {
         let logo = get_font_logo(backend).context("failed to get font logo")?;
-        writeln!(io::stdout(), "{}", logo).context("failed to write logo to stdout")?;
+        println!("{logo}");
         return Ok(());
     }
 
@@ -111,12 +110,7 @@ fn main() -> Result<()> {
 
     if show_pride_month && !config.pride_month_disable {
         pride_month::start_animation(color_mode).context("failed to draw pride month animation")?;
-        writeln!(
-            io::stdout(),
-            "\nHappy pride month!\n(You can always view the animation again with `hyfetch \
-             --june`)\n"
-        )
-        .context("failed to write message to stdout")?;
+        println!("\nHappy pride month!\n(You can always view the animation again with `hyfetch --june`)\n");
 
         if !june_path.is_file() && !options.june {
             File::create(&june_path)
@@ -432,18 +426,13 @@ fn create_config(
             printc(line, AnsiMode::Rgb).context("failed to print RGB color test line")?;
         }
 
-        writeln!(io::stdout()).context("failed to write to stdout")?;
+        println!();
         print_title_prompt(
             option_counter,
             "Which &bcolor system &ado you want to use?",
             color_mode,
-        )
-        .context("failed to print title prompt")?;
-        writeln!(
-            io::stdout(),
-            "(If you can't see colors under \"RGB Color Testing\", please choose 8bit)\n"
-        )
-        .context("failed to write message to stdout")?;
+        )?;
+        println!("(If you can't see colors under \"RGB Color Testing\", please choose 8bit)\n");
 
         let choice = literal_input(
             "Your choice?",
@@ -562,16 +551,11 @@ fn create_config(
         clear_screen(Some(&title), color_mode, debug_mode).context("failed to clear screen")?;
         print_title_prompt(option_counter, "Let's choose a flag!", color_mode)
             .context("failed to print title prompt")?;
-        writeln!(
-            io::stdout(),
-            "Available flag presets:\nPage: {page_num} of {num_pages}\n",
-            page_num = page_num.checked_add(1).unwrap()
-        )
-        .context("failed to write header to stdout")?;
+        println!("Available flag presets:\nPage: {page_num} of {num_pages}\n", page_num = page_num + 1);
         for &row in page {
             print_flag_row(row, color_mode).context("failed to print flag row")?;
         }
-        writeln!(io::stdout()).context("failed to write to stdout")?;
+        println!();
         Ok(())
     };
 
@@ -583,7 +567,7 @@ fn create_config(
             }
             printc(line.join("  "), color_mode).context("failed to print line")?;
         }
-        writeln!(io::stdout()).context("failed to write to stdout")?;
+        println!();
         Ok(())
     }
 
@@ -608,16 +592,9 @@ fn create_config(
         let mut opts: Vec<&str> = <Preset as VariantNames>::VARIANTS.into();
         opts.extend(["next", "n", "prev", "p"]);
 
-        writeln!(
-            io::stdout(),
-            "Enter '[n]ext' to go to the next page and '[p]rev' to go to the previous page."
-        )
-        .context("failed to write message to stdout")?;
+        println!("Enter '[n]ext' to go to the next page and '[p]rev' to go to the previous page.");
         let selection = literal_input(
-            format!(
-                "Which {preset} do you want to use? ",
-                preset = preset_default_colored
-            ),
+            format!("Which {preset_default_colored} do you want to use? "),
             &opts[..],
             Preset::Rainbow.as_ref(),
             false,
@@ -672,16 +649,14 @@ fn create_config(
             color_mode,
         )
         .context("failed to print title prompt")?;
-        writeln!(
-            io::stdout(),
+        println!(
             "The colors might be a little bit too {bright_dark} for {light_dark} mode.\n",
             bright_dark = match theme {
                 TerminalTheme::Light => "bright",
                 TerminalTheme::Dark => "dark",
             },
             light_dark = theme.as_ref()
-        )
-        .context("failed to write message to stdout")?;
+        );
 
         let color_align = ColorAlignment::Horizontal;
 
@@ -739,14 +714,10 @@ fn create_config(
         }
 
         loop {
-            writeln!(
-                io::stdout(),
-                "\nWhich brightness level looks the best? (Default: {default:.0}% for \
-                 {light_dark} mode)",
+            println!("\nWhich brightness level looks the best? (Default: {default:.0}% for {light_dark} mode)",
                 default = f32::from(default_lightness) * 100.0,
                 light_dark = theme.as_ref()
-            )
-            .context("failed to write prompt to stdout")?;
+            );
             let lightness = input(Some("> "))
                 .context("failed to read input")?
                 .trim()
@@ -762,8 +733,7 @@ fn create_config(
                         "&cUnable to parse lightness value, please enter a lightness value such \
                          as 45%, .45, or 45",
                         color_mode,
-                    )
-                    .context("failed to print message")?;
+                    )?;
                 },
             }
         }
@@ -887,8 +857,8 @@ fn create_config(
                     }
                     printc(line.join("                 "), color_mode).context("failed to print ascii line")?; 
                 }
-        
-                writeln!(io::stdout()).context("failed to write to stdout")?;
+
+                println!();
             }
 
             print_title_prompt(
@@ -1011,7 +981,7 @@ fn create_config(
                 }
                 printc(line.join("    "), color_mode).context("failed to print ascii line")?;
             }
-            writeln!(io::stdout()).context("failed to write to stdout")?;
+            println!();
         }
 
         print_title_prompt(
@@ -1020,12 +990,7 @@ fn create_config(
             color_mode,
         )
         .context("failed to print title prompt")?;
-        writeln!(
-            io::stdout(),
-            "You can choose standard horizontal or vertical alignment, or use one of the random \
-             color schemes.\nYou can type \"roll\" to randomize again.\n"
-        )
-        .context("failed to write message to stdout")?;
+        println!("You can choose standard horizontal or vertical alignment, or use one of the random color schemes.\nYou can type \"roll\" to randomize again.\n");
         let mut opts: Vec<Cow<str>> = ["horizontal", "vertical", "roll"].map(Into::into).into();
         opts.extend((0..random_count).map(|i| format!("random{i}").into()));
         let choice = literal_input("Your choice?", &opts[..], "horizontal", true, color_mode)

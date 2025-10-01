@@ -113,16 +113,12 @@ where
         };
 
         if let Some(selected) = find_selection(&selection, options) {
-            writeln!(io::stdout()).context("failed to write to stdout")?;
+            println!();
 
             return Ok(selected);
         } else {
             let options_text = options.iter().map(AsRef::as_ref).join("|");
-            writeln!(
-                io::stdout(),
-                "Invalid selection! {selection} is not one of {options_text}"
-            )
-            .context("failed to write message to stdout")?;
+            println!("Invalid selection! {selection} is not one of {options_text}");
         }
     }
 
