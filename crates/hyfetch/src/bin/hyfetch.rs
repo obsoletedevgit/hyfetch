@@ -272,10 +272,6 @@ fn create_config(
         } else if color_level.has_256 {
             AnsiMode::Ansi256
         } else if color_level.has_basic {
-            // unimplemented!(
-            //     "{mode} color mode not supported",
-            //     mode = AnsiMode::Ansi16.as_ref()
-            // );
             AnsiMode::Ansi256
         } else {
             unreachable!();
@@ -1060,38 +1056,21 @@ fn create_config(
 
     if choice == "y" {
         loop {
-            let path_input = input(Some("Path to custom ASCII file (must be .txt and UTF-8 encoded): "))
-                .context("failed to read input")?
-                .trim()
-                .to_owned();
-
-            if path_input.is_empty() {
+            let pth = input(Some("Path to custom ASCII file (must be UTF-8 encoded, empty to skip): "))?.trim().to_owned();
+            if pth.is_empty() {
                 printc!("&cNo path entered. Skipping custom ASCII file.");
                 break;
             }
 
-            let custom_path = PathBuf::from(&path_input);
-            if !custom_path.is_file() {
-                printc!("&cError: File not found at {path_input}");
-                let try_again = literal_input("Try again?", &["y", "n"], "y", true, color_mode).context("failed to ask for choice input")?;
-                if try_again == "n" {
-                    break;
-                }
+            let pth_buf = PathBuf::from(&pth);
+            if !pth_buf.is_file() {
+                printc!("&cError: File not found at {pth}");
                 continue;
             }
 
-            if custom_path.extension().map_or(true, |ext| ext != "txt") {
-                printc!("&cError: File must have a .txt extension. Found {:?}", custom_path.extension());
-                let try_again = literal_input("Try again?", &["y", "n"], "y", true, color_mode).context("failed to ask for choice input")?;
-                if try_again == "n" {
-                    break;
-                }
-                continue;
-            }
-
-            match fs::read_to_string(&custom_path) {
+            match fs::read_to_string(&pth_buf) {
                 Ok(_) => {
-                    custom_ascii_path = Some(path_input);
+                    custom_ascii_path = Some(pth);
                     update_title(
                         &mut title,
                         &mut option_counter,
@@ -1101,11 +1080,7 @@ fn create_config(
                     break;
                 }
                 Err(e) => {
-                    printc(format!("&cError: File is not UTF-8 encoded or an unexpected error occurred: {e}"), color_mode).context("failed to print message")?;
-                    let try_again = literal_input("Try again?", &["y", "n"], "y", true, color_mode).context("failed to ask for choice input")?;
-                    if try_again == "n" {
-                        break;
-                    }
+                    printc!("&cError: File is not UTF-8 encoded or an unexpected error occurred: {e}");
                     continue;
                 }
             }
