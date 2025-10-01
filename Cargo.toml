@@ -24,7 +24,7 @@ enable-ansi-support = { version = "0.2.1", default-features = false }
 enterpolation = { version = "0.2.1", default-features = false }
 fastrand = { version = "2.1.0", default-features = false }
 indexmap = { version = "2.2.6", default-features = false }
-itertools = { version = "0.13.0", default-features = false }
+itertools = { version = "0.14.0", default-features = false }
 normpath = { version = "1.2.0", default-features = false }
 palette = { version = "0.7.6", default-features = false }
 regex = { version = "1.10.5", default-features = false }
@@ -37,10 +37,10 @@ strum = { version = "0.26.3", default-features = false }
 supports-color = { version = "3.0.0", default-features = false }
 tempfile = { version = "3.10.1", default-features = false }
 terminal-colorsaurus = { version = "0.4.3", default-features = false }
-terminal_size = { version = "0.3.0", default-features = false }
+terminal_size = { version = "0.4.3", default-features = false }
 thiserror = { version = "1.0.61", default-features = false }
 time = { version = "0.3.36", default-features = false }
-toml_edit = { version = "0.22.16", default-features = false }
+toml_edit = { version = "0.23.6", default-features = false }
 tracing = { version = "0.1.40", default-features = false }
 tracing-subscriber = { version = "0.3.18", default-features = false }
 unicode-normalization = { version = "0.1.23", default-features = false }
