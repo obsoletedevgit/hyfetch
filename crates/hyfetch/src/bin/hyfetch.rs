@@ -429,8 +429,7 @@ fn create_config(
             TerminalTheme::Dark.as_ref(),
             true,
             color_mode,
-        )
-        .context("failed to ask for choice input")?;
+        )?;
         Ok((
             choice.parse().expect("selected theme should be valid"),
             "Selected background color",
