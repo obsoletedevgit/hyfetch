@@ -22,6 +22,16 @@ class ColorProfile:
     colors: list[RGB]
     spacing: ColorSpacing = 'equal'
 
+    @staticmethod
+    def from_json(data: list | dict) -> 'ColorProfile':
+        if isinstance(data, list):
+            return ColorProfile(data)
+        else:
+            pf = ColorProfile(data['colors'])
+            if 'weights' in data:
+                pf = ColorProfile(pf.with_weights(data['weights']))
+            return pf
+
     def __init__(self, colors: list[str] | list[RGB]):
         if isinstance(colors[0], str):
             self.raw = colors
@@ -166,6 +176,6 @@ class ColorProfile:
 
 
 PRESETS: dict[str, ColorProfile] = {
-    k: (ColorProfile(v) if isinstance(v, list) else ColorProfile(v['colors']))
-    for k, v in json.loads((SRC / 'data/presets.json').read_text('utf-8'))['presets'].items()
+    k: ColorProfile.from_json(v)
+    for k, v in json.loads((SRC / 'data/presets.json').read_text('utf-8')).items()
 }
