@@ -25,7 +25,8 @@ use hyfetch::models::Config;
 #[cfg(feature = "macchina")]
 use hyfetch::neofetch_util::macchina_path;
 use hyfetch::neofetch_util::{self, add_pkg_path, fastfetch_path, get_distro_ascii, get_distro_name, literal_input, ColorAlignment, NEOFETCH_COLORS_AC, NEOFETCH_COLOR_PATTERNS, TEST_ASCII};
-use hyfetch::presets::{AssignLightness, ColorProfile, Preset};
+use hyfetch::color_profile::{AssignLightness, ColorProfile};
+use hyfetch::presets::{Preset};
 use hyfetch::{pride_month, printc};
 use hyfetch::types::{AnsiMode, Backend, TerminalTheme};
 use hyfetch::utils::{get_cache_path, input};

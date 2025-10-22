@@ -1,11 +1,15 @@
+use std::collections::HashMap;
 use std::env;
 use std::fmt::Write as _;
 use std::fs;
+use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
 use fs_extra::dir::{CopyOptions};
+use heck::ToUpperCamelCase;
 use indexmap::IndexMap;
 use regex::Regex;
+use serde::Deserialize;
 use unicode_normalization::UnicodeNormalization as _;
 
 #[derive(Debug)]
@@ -51,12 +55,13 @@ fn main() {
         else { fs::copy(&src, &dst).expect("Failed to copy file to OUT_DIR"); }
     }
 
+    preset_codegen(&o.join("hyfetch/data/presets.json"), &o.join("presets.rs"))
+        .expect("couldn't generate preset code");
+
     export_distros(&o.join("neofetch"), &o);
 }
 
-fn export_distros<P>(neofetch_path: P, out_path: &Path)
-where
-    P: AsRef<Path>,
+fn export_distros(neofetch_path: &Path, out_path: &Path)
 {
     let distros = parse_ascii_distros(neofetch_path);
     let mut variants = IndexMap::with_capacity(distros.len());
@@ -201,12 +206,8 @@ impl Distro {
 }
 
 /// Parses ascii distros from neofetch script.
-fn parse_ascii_distros<P>(neofetch_path: P) -> Vec<AsciiDistro>
-where
-    P: AsRef<Path>,
+fn parse_ascii_distros(neofetch_path: &Path) -> Vec<AsciiDistro>
 {
-    let neofetch_path = neofetch_path.as_ref();
-
     let nf = {
         let nf = fs::read_to_string(neofetch_path).expect("couldn't read neofetch script");
 
@@ -271,4 +272,71 @@ where
         .iter()
         .filter_map(|block| parse_block(block))
         .collect()
+}
+
+// Preset parsing
+#[derive(Deserialize, Debug)]
+#[serde(untagged)]
+enum PresetEntry {
+    Simple(Vec<String>),
+    Complex { colors: Vec<String>, weights: Option<Vec<u32>> },
+}
+
+type PresetMap = HashMap<String, PresetEntry>;
+
+fn preset_codegen(json_path: &Path, out_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+    // 1. Read and parse the JSON file
+    let json_str = fs::read_to_string(json_path)?;
+    let map: PresetMap = serde_json::from_str(&json_str)?;
+    let mut f = BufWriter::new(fs::File::create(&out_path).unwrap());
+
+    // 2. Build the code string
+    let mut code_decl = String::new();
+    let mut code_match = String::new();
+    for (key, data) in map.iter() {
+        let colors = match data {
+            PresetEntry::Simple(c) => c,
+            PresetEntry::Complex { colors, .. } => colors,
+        };
+        let colors = colors.iter().map(|s| format!("\"{}\"", s)).collect::<Vec<_>>().join(", ");
+        let uck = key.to_upper_camel_case();
+
+        code_decl += &format!(r#"
+            #[serde(rename = "{key}")]
+            #[strum(serialize = "{key}")]
+            {uck},
+        "#);
+
+        let w = if let PresetEntry::Complex { weights: Some(w), .. } = data {
+            format!(".and_then(|c| c.with_weights(vec![{}]))", w.iter().map(|n| n.to_string()).collect::<Vec<_>>().join(", "))
+        } else { "".to_string() };
+
+        code_match += &format!(r#"
+            Preset::{uck} => ColorProfile::from_hex_colors(vec![{colors}]){w},
+        "#);
+    }
+
+    // 3. Write the static map to the generated file
+    writeln!(f, r#"
+    pub use crate::color_profile::ColorProfile;
+    use serde::{{Deserialize, Serialize}};
+    use strum::{{AsRefStr, EnumCount, EnumString, VariantArray, VariantNames}};
+
+    #[derive(Copy, Clone, Hash, Debug, AsRefStr, Deserialize, EnumCount, EnumString, Serialize, VariantArray, VariantNames)]
+    pub enum Preset {{
+        {code_decl}
+    }}
+
+    impl Preset {{
+        pub fn color_profile(&self) -> ColorProfile {{
+            (match self {{
+                {code_match}
+            }})
+            .expect("preset color profiles should be valid")
+        }}
+    }}"#)?;
+
+    f.flush()?;
+
+    Ok(())
 }

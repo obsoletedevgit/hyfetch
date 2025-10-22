@@ -283,6 +283,7 @@ dependencies = [
  "enterpolation",
  "fastrand",
  "fs_extra",
+ "heck",
  "indexmap",
  "itertools",
  "normpath",

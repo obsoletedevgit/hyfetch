@@ -9,3 +9,4 @@ pub mod presets;
 pub mod pride_month;
 pub mod types;
 pub mod utils;
+pub mod color_profile;
