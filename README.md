@@ -129,6 +129,8 @@ cargo install --git https://github.com/hykilpikonna/hyfetch
 
 <!-- CHANGELOG STARTS HERE --->
 
+### 2.0.4
+
 **🔧 Building Pipeline Refactoring**
 
 * Modernize Python building toolchain from `setup.py` to `pyproject.toml`
