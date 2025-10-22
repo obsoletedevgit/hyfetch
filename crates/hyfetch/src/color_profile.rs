@@ -1,7 +1,7 @@
 use std::iter;
 use std::num::{NonZeroU8, NonZeroUsize};
 
-use anyhow::{anyhow, Context as _};
+use anyhow::{anyhow, Result, Context as _};
 use indexmap::IndexSet;
 use palette::num::ClampAssign as _;
 use palette::{IntoColorMut as _, LinSrgb, Okhsl, Srgb};
@@ -28,14 +28,14 @@ impl ColorProfile {
         Self { colors }
     }
 
-    pub fn from_hex_colors<S>(hex_colors: Vec<S>) -> anyhow::Result<Self>
+    pub fn from_hex_colors<S>(hex_colors: Vec<S>) -> Result<Self>
     where
         S: AsRef<str>,
     {
         let colors = hex_colors
             .into_iter()
             .map(|s| s.as_ref().parse())
-            .collect::<anyhow::Result<_, _>>()
+            .collect::<Result<_, _>>()
             .context("failed to parse hex colors")?;
         Ok(Self::new(colors))
     }
@@ -46,7 +46,7 @@ impl ColorProfile {
     ///
     /// * `weights` - Weights of each color (`weights[i]` = how many times
     ///   `colors[i]` appears)
-    pub fn with_weights(&self, weights: Vec<u8>) -> anyhow::Result<Self> {
+    pub fn with_weights(&self, weights: Vec<u8>) -> Result<Self> {
         if weights.len() != self.colors.len() {
             debug!(?weights, ?self.colors, "length mismatch between `weights` and `colors`");
             return Err(anyhow!(
@@ -65,7 +65,7 @@ impl ColorProfile {
 
     /// Creates a new color profile, with the colors spread to the specified
     /// length.
-    pub fn with_length(&self, length: NonZeroU8) -> anyhow::Result<Self> {
+    pub fn with_length(&self, length: NonZeroU8) -> Result<Self> {
         let orig_len = self.colors.len();
         let orig_len: NonZeroUsize = orig_len.try_into().expect("`colors` should not be empty");
         let orig_len: NonZeroU8 = orig_len
@@ -119,7 +119,7 @@ impl ColorProfile {
         color_mode: AnsiMode,
         foreground_background: ForegroundBackground,
         space_only: bool,
-    ) -> anyhow::Result<String>
+    ) -> Result<String>
     where
         S: AsRef<str>,
     {
