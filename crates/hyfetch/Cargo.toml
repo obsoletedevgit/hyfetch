@@ -41,7 +41,7 @@ unicode-segmentation = { workspace = true, features = [] }
 which = { workspace = true, features = [] }
 
 [build-dependencies]
-indexmap = { workspace = true, features = ["std"] }
+indexmap = { workspace = true, features = ["std", "serde"] }
 regex = { workspace = true, features = ["perf", "std", "unicode"] }
 unicode-normalization = { workspace = true, features = ["std"] }
 fs_extra = "1.3.0"

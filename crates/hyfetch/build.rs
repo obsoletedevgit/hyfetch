@@ -1,11 +1,10 @@
-use std::collections::HashMap;
 use std::env;
 use std::fmt::Write as _;
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
 
-use fs_extra::dir::{CopyOptions};
+use fs_extra::dir::CopyOptions;
 use heck::ToUpperCamelCase;
 use indexmap::IndexMap;
 use regex::Regex;
@@ -282,7 +281,7 @@ enum PresetEntry {
     Complex { colors: Vec<String>, weights: Option<Vec<u32>> },
 }
 
-type PresetMap = HashMap<String, PresetEntry>;
+type PresetMap = IndexMap<String, PresetEntry>;
 
 fn preset_codegen(json_path: &Path, out_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
     // 1. Read and parse the JSON file
