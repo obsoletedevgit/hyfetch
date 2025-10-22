@@ -3,7 +3,7 @@ use std::fmt::Write as _;
 use std::fs;
 use std::io::{BufWriter, Write};
 use std::path::{Path, PathBuf};
-
+use anyhow::{Context, Result};
 use fs_extra::dir::CopyOptions;
 use heck::ToUpperCamelCase;
 use indexmap::IndexMap;
@@ -32,7 +32,7 @@ fn anything_that_exist(paths: &[&Path]) -> Option<PathBuf> {
     paths.iter().copied().find(|p| p.exists()).map(Path::to_path_buf)
 }
 
-fn main() {
+fn main() -> Result<()> {
     // Path hack to make file paths work in both workspace and manifest directory
     let dir = PathBuf::from(env::var_os("CARGO_WORKSPACE_DIR").unwrap_or_else(|| env::var_os("CARGO_MANIFEST_DIR").unwrap()));
     let o = PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -41,7 +41,7 @@ fn main() {
         let src = anything_that_exist(&[
             &dir.join(file),
             &dir.join("../../").join(file),
-        ]).expect("couldn't find neofetch");
+        ]).context("couldn't find neofetch")?;
         let dst = o.join(file);
         println!("cargo:rerun-if-changed={}", src.display());
 
@@ -49,20 +49,19 @@ fn main() {
         if src.is_dir() {
             let opt = CopyOptions { overwrite: true, copy_inside: true, ..CopyOptions::default() };
             println!("copying {} to {}", src.display(), dst.display());
-            fs_extra::dir::copy(&src, &dst, &opt).expect("Failed to copy directory to OUT_DIR");
+            fs_extra::dir::copy(&src, &dst, &opt)?;
         }
-        else { fs::copy(&src, &dst).expect("Failed to copy file to OUT_DIR"); }
+        else { fs::copy(&src, &dst)?; }
     }
 
-    preset_codegen(&o.join("hyfetch/data/presets.json"), &o.join("presets.rs"))
-        .expect("couldn't generate preset code");
-
-    export_distros(&o.join("neofetch"), &o);
+    preset_codegen(&o.join("hyfetch/data/presets.json"), &o.join("presets.rs"))?;
+    export_distros(&o.join("neofetch"), &o)?;
+    Ok(())
 }
 
-fn export_distros(neofetch_path: &Path, out_path: &Path)
+fn export_distros(neofetch_path: &Path, out_path: &Path) -> Result<()>
 {
-    let distros = parse_ascii_distros(neofetch_path);
+    let distros = parse_ascii_distros(neofetch_path)?;
     let mut variants = IndexMap::with_capacity(distros.len());
 
     for distro in &distros {
@@ -85,18 +84,13 @@ fn export_distros(neofetch_path: &Path, out_path: &Path)
     let mut buf = r###"
 #[derive(Clone, Eq, PartialEq, Hash, Debug)]
 pub enum Distro {
-"###
-    .to_owned();
+"###.to_string();
 
     for (variant, AsciiDistro { pattern, .. }) in &variants {
-        write!(
-            buf,
-            r###"
+        write!(buf, r###"
     // {pattern})
     {variant},
-"###,
-        )
-        .unwrap();
+"###)?;
     }
 
     buf.push_str(
@@ -158,15 +152,11 @@ impl Distro {
 
         let condition = conds.join(" || ");
 
-        write!(
-            buf,
-            r###"
+        write!(buf, r###"
         if {condition} {{
             return Some(Self::{variant});
         }}
-"###
-        )
-        .unwrap();
+"###)?;
     }
 
     buf.push_str(
@@ -181,15 +171,11 @@ impl Distro {
 
     let quotes = "#".repeat(80);
     for (variant, AsciiDistro { art, .. }) in &variants {
-        write!(
-            buf,
-            r###"
+        write!(buf, r###"
             Self::{variant} => r{quotes}"
 {art}
 "{quotes},
-"###,
-        )
-        .unwrap();
+"###)?;
     }
 
     buf.push_str(
@@ -201,22 +187,23 @@ impl Distro {
 "###,
     );
 
-    fs::write(out_path.join("distros.rs"), buf).expect("couldn't write distros.rs");
+    fs::write(out_path.join("distros.rs"), buf)?;
+    Ok(())
 }
 
 /// Parses ascii distros from neofetch script.
-fn parse_ascii_distros(neofetch_path: &Path) -> Vec<AsciiDistro>
+fn parse_ascii_distros(neofetch_path: &Path) -> Result<Vec<AsciiDistro>>
 {
     let nf = {
-        let nf = fs::read_to_string(neofetch_path).expect("couldn't read neofetch script");
+        let nf = fs::read_to_string(neofetch_path)?;
 
         // Get the content of "get_distro_ascii" function
         let (_, nf) = nf
             .split_once("get_distro_ascii() {\n")
-            .expect("couldn't find get_distro_ascii function");
+            .context("couldn't find get_distro_ascii function")?;
         let (nf, _) = nf
             .split_once("\n}\n")
-            .expect("couldn't find end of get_distro_ascii function");
+            .context("couldn't find end of get_distro_ascii function")?;
 
         let mut nf = nf.replace('\t', &" ".repeat(4));
 
@@ -227,8 +214,8 @@ fn parse_ascii_distros(neofetch_path: &Path) -> Vec<AsciiDistro>
         nf
     };
 
-    let case_re = Regex::new(r"case .*? in\n").expect("couldn't compile case regex");
-    let eof_re = Regex::new(r"EOF[ \n]*?;;").expect("couldn't compile eof regex");
+    let case_re = Regex::new(r"case .*? in\n")?;
+    let eof_re = Regex::new(r"EOF[ \n]*?;;")?;
 
     // Split by blocks
     let mut blocks = Vec::new();
@@ -262,15 +249,9 @@ fn parse_ascii_distros(neofetch_path: &Path) -> Vec<AsciiDistro>
         // for printf
         let art = art.replace(r"\\", r"\");
 
-        Some(AsciiDistro {
-            pattern: pattern.to_owned(),
-            art,
-        })
+        Some(AsciiDistro { pattern: pattern.to_owned(), art })
     }
-    blocks
-        .iter()
-        .filter_map(|block| parse_block(block))
-        .collect()
+    Ok(blocks.iter().filter_map(|block| parse_block(block)).collect())
 }
 
 // Preset parsing
@@ -283,11 +264,11 @@ enum PresetEntry {
 
 type PresetMap = IndexMap<String, PresetEntry>;
 
-fn preset_codegen(json_path: &Path, out_path: &Path) -> Result<(), Box<dyn std::error::Error>> {
+fn preset_codegen(json_path: &Path, out_path: &Path) -> Result<()> {
     // 1. Read and parse the JSON file
     let json_str = fs::read_to_string(json_path)?;
     let map: PresetMap = serde_json::from_str(&json_str)?;
-    let mut f = BufWriter::new(fs::File::create(&out_path).unwrap());
+    let mut f = BufWriter::new(fs::File::create(&out_path)?);
 
     // 2. Build the code string
     let mut code_decl = String::new();
