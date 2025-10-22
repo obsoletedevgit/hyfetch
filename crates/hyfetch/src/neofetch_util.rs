@@ -2,7 +2,9 @@ use std::borrow::Cow;
 use std::ffi::OsStr;
 #[cfg(feature = "macchina")]
 use std::fs;
-use std::io::{self, Write as _};
+use std::io::{Write as _};
+#[cfg(windows)]
+use std::io::{self};
 use std::path::PathBuf;
 use std::process::Command;
 use std::sync::OnceLock;
