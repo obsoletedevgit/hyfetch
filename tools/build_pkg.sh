@@ -62,11 +62,6 @@ cp "$DIR/../target/x86_64-pc-windows-gnu/release/hyfetch.exe" wheel/hyfetch/rust
 sed -i 's/Tag: py3-none-.*/Tag: py3-none-win32/' wheel/*.dist-info/WHEEL
 python "$DIR/build_rehash.py" wheel
 
-# Zip to -win32.whl
-#new_name=${file/-any/-win32}
-#cd wheel && zip -qq -y -r "../$new_name" * && cd ..
-#twine check "$new_name"
-
 # Zip to -win_amd64.whl
 # Since pypi doesn't allow two identical files with different names to be uploaded
 # We need to change the zip content a little bit for win_amd64
@@ -79,8 +74,10 @@ twine check "$new_name"
 # =================
 # Build for linux
 
-# Now we're done with windows, delete the git folder
-rm -rf wheel/git
+# Now we're done with windows, delete wheel and unzip again
+echo "> Building for other platforms"
+rm -rf wheel
+unzip -qq "$file" -d wheel
 
 function build_for_platform() {
     ff_platform=$1
