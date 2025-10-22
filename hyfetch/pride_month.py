@@ -1,11 +1,12 @@
+from __future__ import annotations
+
 import math
 from time import sleep
 
-from hyfetch import presets
-from hyfetch.color_util import RGB, color, printc
-from hyfetch.constants import IS_WINDOWS
-from hyfetch.neofetch_util import term_size
-from hyfetch.presets import PRESETS
+from .color_util import RGB, color, printc
+from .constants import IS_WINDOWS
+from .neofetch_util import term_size
+from .presets import PRESETS
 
 
 def key_pressed():

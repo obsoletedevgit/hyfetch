@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 from . import main
 from .color_util import printc
+
 
 def run_py():
     try:
