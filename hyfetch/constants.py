@@ -9,6 +9,7 @@ from .types import LightDark
 from .__version__ import VERSION
 
 CONFIG_PATH = Path.home() / '.config/hyfetch.json'
+SRC = Path(__file__).parent
 
 
 TEST_ASCII = r"""

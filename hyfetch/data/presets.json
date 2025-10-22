@@ -216,10 +216,7 @@
       "colors": ["#FF115F", "#A34AA3", "#00A4E7", "#FFDF00", "#000000", "#FFED71", "#85DAFF", "#DBADDA", "#FE8DB1"],
       "comment": "Sourced from https://gender.fandom.com/wiki/Fluidflux?file=FC90B24D-CA36-4FE2-A752-C9ABFC65E332.jpeg"
     },
-    "fluidflux B": {
-      "colors": ["#C6D1D2", "#F47B9D", "#F09F9B", "#E3F09E", "#75EEEA", "#52D2ED", "#C6D1D2"],
-    },
-
+    "fluidflux B": ["#C6D1D2", "#F47B9D", "#F09F9B", "#E3F09E", "#75EEEA", "#52D2ED", "#C6D1D2"],
     
     "beiyang": ["#DF1B12", "#FFC600", "#01639D", "#FFFFFF", "#000000"],
     "burger": ["#F3A26A", "#498701", "#FD1C13", "#7D3829", "#F3A26A"],

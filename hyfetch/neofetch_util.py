@@ -14,14 +14,13 @@ from tempfile import TemporaryDirectory
 from typing import Iterable
 
 from .color_util import color, printc
-from .constants import GLOBAL_CFG, IS_WINDOWS
+from .constants import GLOBAL_CFG, IS_WINDOWS, SRC
 from .distros import distro_detector
 from .presets import ColorProfile
 from .serializer import from_dict
 from .types import BackendLiteral, ColorAlignMode
 
 RE_NEOFETCH_COLOR = re.compile('\\${c[0-9]}')
-SRC = Path(__file__).parent
 
 
 def literal_input(prompt: str, options: Iterable[str], default: str, show_ops: bool = True) -> str:

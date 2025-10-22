@@ -1,8 +1,9 @@
-import json
-from pathlib import Path
+from __future__ import annotations
 
-from hyfetch.constants import CACHE_PATH
-from hyfetch.neofetch_util import get_distro_name
+import json
+
+from .constants import CACHE_PATH, SRC
+from .neofetch_util import get_distro_name
 
 
 def get_font_logo() -> str:
@@ -10,7 +11,7 @@ def get_font_logo() -> str:
     if cache.exists():
         return cache.read_text('utf-8')
 
-    font_logos: dict[str, str] = json.loads((Path(__file__).parent / 'data/font_logos.json').read_text('utf-8'))
+    font_logos: dict[str, str] = json.loads((SRC / 'data/font_logos.json').read_text('utf-8'))
     font_logos = {k.lower(): v for k, v in font_logos.items()}
 
     # Get the distro
