@@ -16,8 +16,9 @@ rm -rf build/
 # Remove git from the source code before building
 rm -rf hyfetch/git/
 
-# Build python from setup.py
-python3 setup.py sdist bdist_wheel
+# Build python package
+python3 -m pip install build
+python3 -m build
 
 # Check
 twine check dist/*.tar.gz
